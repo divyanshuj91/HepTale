@@ -1,65 +1,196 @@
-import Image from "next/image";
+import Link from 'next/link'
+import { getTrendingMovies, getTrendingTV, getTrendingAnime } from '@/lib/tmdb'
+import MediaCard from '@/components/MediaCard'
+import { MOODS } from '@/lib/tmdb'
+import { Play, Flame, Heart, Smile, Brain, Sparkles } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
-export default function Home() {
+export const revalidate = 3600 // Revalidate page every hour
+
+// Helper to get matching icons for moods
+function getMoodIcon(moodId: string) {
+  switch (moodId) {
+    case 'feel-good':
+      return <Smile className="h-6 w-6 text-emerald-400" />
+    case 'gritty':
+      return <Flame className="h-6 w-6 text-orange-400" />
+    case 'tearjerker':
+      return <Heart className="h-6 w-6 text-rose-400" />
+    case 'mind-bending':
+      return <Brain className="h-6 w-6 text-cyan-400" />
+    default:
+      return <Sparkles className="h-6 w-6 text-zinc-400" />
+  }
+}
+
+function getMoodColorClass(moodId: string) {
+  switch (moodId) {
+    case 'feel-good':
+      return 'from-emerald-500/10 to-yellow-500/5 hover:border-emerald-500/30 shadow-emerald-500/5'
+    case 'gritty':
+      return 'from-orange-500/10 to-red-500/5 hover:border-orange-500/30 shadow-orange-500/5'
+    case 'tearjerker':
+      return 'from-rose-500/10 to-purple-500/5 hover:border-rose-500/30 shadow-rose-500/5'
+    case 'mind-bending':
+      return 'from-cyan-500/10 to-blue-500/5 hover:border-cyan-500/30 shadow-cyan-500/5'
+    default:
+      return 'from-zinc-900 to-zinc-950'
+  }
+}
+
+export default async function HomePage() {
+  const [movies, tvShows, anime] = await Promise.all([
+    getTrendingMovies(),
+    getTrendingTV(),
+    getTrendingAnime(),
+  ])
+
+  // Use the top trending movie for the Hero backdrop
+  const heroMedia = movies[2] || movies[0]
+  const heroBackdrop = heroMedia?.backdrop_path
+    ? `https://image.tmdb.org/t/p/original${heroMedia.backdrop_path}`
+    : null
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div className="flex flex-col pb-12">
+      {/* 1. Cinematic Hero Banner */}
+      {heroMedia && (
+        <section className="relative flex min-h-[60vh] md:min-h-[70vh] w-full items-end justify-start overflow-hidden py-16">
+          {/* Background backdrop image with dual dark gradient overlays */}
+          {heroBackdrop ? (
+            <div className="absolute inset-0 -z-10">
+              <img
+                src={heroBackdrop}
+                alt={heroMedia.title || 'Hero Movie'}
+                className="h-full w-full object-cover object-center opacity-45 scale-100 transition-transform duration-10000 ease-out"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/70 to-zinc-950/20" />
+              <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/50 to-transparent" />
+            </div>
+          ) : (
+            <div className="absolute inset-0 -z-10 bg-gradient-to-tr from-zinc-900 via-zinc-950 to-zinc-900" />
+          )}
+
+          <div className="container mx-auto px-4">
+            <div className="max-w-2xl space-y-4">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400 ring-1 ring-emerald-500/30">
+                <Sparkles className="h-3 w-3" />
+                Featured Release
+              </div>
+              <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl text-zinc-100">
+                {heroMedia.title}
+              </h1>
+              <p className="line-clamp-3 text-base text-zinc-300 md:text-lg">
+                {heroMedia.overview}
+              </p>
+              
+              <div className="flex flex-wrap gap-3 pt-2">
+                <Link href={`/movie/${heroMedia.id}`}>
+                  <Button className="bg-emerald-500 font-bold text-zinc-950 hover:bg-emerald-400">
+                    <Play className="mr-2 h-4 w-4 fill-zinc-950" />
+                    Review & Details
+                  </Button>
+                </Link>
+                <Link href="/search">
+                  <Button variant="outline" className="border-zinc-700 bg-zinc-900/40 text-zinc-100 hover:bg-zinc-800 hover:text-white">
+                    Explore More
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      <div className="container mx-auto px-4 mt-8 space-y-12">
+        {/* 2. Mood-Based Discovery Board */}
+        <section className="space-y-4">
+          <div className="flex flex-col gap-1">
+            <h2 className="text-xl font-bold tracking-tight text-zinc-100 md:text-2xl">
+              How are you feeling today?
+            </h2>
+            <p className="text-sm text-zinc-500">
+              Discover titles tailored to your emotional state or vibe.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {MOODS.map((mood) => (
+              <Link
+                key={mood.id}
+                href={`/search?mood=${mood.id}`}
+                className={`flex flex-col items-center justify-center rounded-2xl border border-zinc-800 bg-zinc-900/10 p-6 text-center shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-zinc-900/40 hover:shadow-2xl ${getMoodColorClass(mood.id)}`}
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-950/60 ring-1 ring-zinc-800 mb-3">
+                  {getMoodIcon(mood.id)}
+                </div>
+                <span className="text-base font-bold text-zinc-100">{mood.name}</span>
+                <span className="mt-1 text-xs text-zinc-500">Explore mood</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* 3. Trending Movies Row */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold tracking-tight text-zinc-100 md:text-2xl">
+              Trending Movies
+            </h2>
+            <Link href="/discover/movie" className="text-sm font-semibold text-emerald-400 hover:underline">
+              See all
+            </Link>
+          </div>
+          
+          <div className="flex w-full gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
+            {movies.map((movie: any) => (
+              <div key={movie.id} className="w-[180px] flex-shrink-0 sm:w-[200px]">
+                <MediaCard {...movie} media_type="movie" />
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* 4. Trending TV Shows Row */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold tracking-tight text-zinc-100 md:text-2xl">
+              Hot TV Shows
+            </h2>
+            <Link href="/discover/tv" className="text-sm font-semibold text-emerald-400 hover:underline">
+              See all
+            </Link>
+          </div>
+          
+          <div className="flex w-full gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
+            {tvShows.map((show: any) => (
+              <div key={show.id} className="w-[180px] flex-shrink-0 sm:w-[200px]">
+                <MediaCard {...show} media_type="tv" />
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* 5. Trending Anime Row */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold tracking-tight text-zinc-100 md:text-2xl">
+              Hot Anime Series
+            </h2>
+            <Link href="/discover/anime" className="text-sm font-semibold text-emerald-400 hover:underline">
+              See all
+            </Link>
+          </div>
+          
+          <div className="flex w-full gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
+            {anime.map((show: any) => (
+              <div key={show.id} className="w-[180px] flex-shrink-0 sm:w-[200px]">
+                <MediaCard {...show} media_type="tv" />
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
-  );
+  )
 }
