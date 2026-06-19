@@ -26,15 +26,15 @@ function getMoodIcon(moodId: string) {
 function getMoodColorClass(moodId: string) {
   switch (moodId) {
     case 'feel-good':
-      return 'from-emerald-500/10 to-yellow-500/5 hover:border-emerald-500/30 shadow-emerald-500/5'
+      return 'from-emerald-500/10 to-yellow-500/5 hover:border-emerald-400/40 card-glow-emerald border-emerald-500/20'
     case 'gritty':
-      return 'from-orange-500/10 to-red-500/5 hover:border-orange-500/30 shadow-orange-500/5'
+      return 'from-orange-500/10 to-red-500/5 hover:border-orange-400/40 card-glow-gold border-orange-500/20'
     case 'tearjerker':
-      return 'from-rose-500/10 to-purple-500/5 hover:border-rose-500/30 shadow-rose-500/5'
+      return 'from-rose-500/10 to-purple-500/5 hover:border-rose-400/40 card-glow-rose border-rose-500/20'
     case 'mind-bending':
-      return 'from-cyan-500/10 to-blue-500/5 hover:border-cyan-500/30 shadow-cyan-500/5'
+      return 'from-cyan-500/10 to-blue-500/5 hover:border-cyan-400/40 card-glow-emerald border-cyan-500/20'
     default:
-      return 'from-zinc-900 to-zinc-950'
+      return 'from-zinc-900 to-zinc-950 border-zinc-800'
   }
 }
 
@@ -86,13 +86,13 @@ export default async function HomePage() {
               
               <div className="flex flex-wrap gap-3 pt-2">
                 <Link href={`/movie/${heroMedia.id}`}>
-                  <Button className="bg-emerald-500 font-bold text-zinc-950 hover:bg-emerald-400">
+                  <Button className="bg-emerald-400 font-bold text-zinc-950 hover:bg-emerald-300 shadow-[0_0_20px_oklch(0.85_0.16_150/20%)] transition-all cursor-pointer">
                     <Play className="mr-2 h-4 w-4 fill-zinc-950" />
                     Review & Details
                   </Button>
                 </Link>
                 <Link href="/search">
-                  <Button variant="outline" className="border-zinc-700 bg-zinc-900/40 text-zinc-100 hover:bg-zinc-800 hover:text-white">
+                  <Button variant="outline" className="border-zinc-800 bg-zinc-900/20 text-zinc-100 hover:bg-zinc-900/60 hover:text-white transition-all cursor-pointer">
                     Explore More
                   </Button>
                 </Link>

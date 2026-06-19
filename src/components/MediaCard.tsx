@@ -33,7 +33,7 @@ export default function MediaCard({
   const href = `/${media_type}/${id}`
 
   return (
-    <Link href={href} className="group relative flex flex-col overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition-all duration-300 hover:-translate-y-1 hover:border-zinc-700 hover:bg-zinc-900 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-emerald-500/5">
+    <Link href={href} className="group relative flex flex-col overflow-hidden rounded-xl glass-panel card-glow-emerald transition-all duration-300 hover:-translate-y-1">
       {/* Aspect Ratio container for Poster */}
       <div className="relative aspect-[2/3] w-full overflow-hidden bg-zinc-950">
         {posterUrl ? (
@@ -53,12 +53,12 @@ export default function MediaCard({
         {/* Floating Badges */}
         <div className="absolute top-2 right-2 flex flex-col gap-1.5">
           {vote_average !== undefined && vote_average > 0 && (
-            <div className="flex items-center gap-1 rounded-md bg-zinc-950/80 px-2 py-1 text-xs font-semibold text-amber-400 backdrop-blur-sm">
+            <div className="flex items-center gap-1 rounded-md bg-zinc-950/80 px-2 py-1 text-xs font-semibold text-amber-400 backdrop-blur-sm shadow-[0_0_10px_oklch(0.8_0.15_80/15%)]">
               <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
               {vote_average.toFixed(1)}
             </div>
           )}
-          <div className="rounded-md bg-zinc-950/80 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400 backdrop-blur-sm self-end">
+          <div className="rounded-md bg-zinc-950/80 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400 backdrop-blur-sm self-end shadow-[0_0_10px_oklch(0.85_0.16_150/15%)]">
             {media_type === 'movie' ? 'Movie' : 'Show'}
           </div>
         </div>

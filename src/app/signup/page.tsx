@@ -52,7 +52,7 @@ export default function SignupPage() {
           </div>
           <CardTitle className="text-2xl font-bold tracking-tight">Create your account</CardTitle>
           <CardDescription className="text-zinc-400">
-            Join the OMDb community and start sharing reviews
+            Join the HepTale community and start sharing reviews
           </CardDescription>
         </CardHeader>
         

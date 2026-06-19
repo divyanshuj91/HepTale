@@ -47,7 +47,7 @@ export default function LoginPage() {
           </div>
           <CardTitle className="text-2xl font-bold tracking-tight">Welcome back</CardTitle>
           <CardDescription className="text-zinc-400">
-            Log in to your OMDb account to save ratings and reviews
+            Log in to your HepTale account to save ratings and reviews
           </CardDescription>
         </CardHeader>
         
