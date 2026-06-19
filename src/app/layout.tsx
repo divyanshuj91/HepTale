@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OMDb — Movie, TV & Anime Discovery Hub",
+  title: "HepTale — Movie, TV & Anime Discovery Hub",
   description: "A community-driven hub for mood-based recommendations, custom ratings, and pop-culture discussions.",
 };
 

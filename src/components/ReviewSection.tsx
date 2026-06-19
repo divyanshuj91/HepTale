@@ -234,13 +234,13 @@ export default function ReviewSection({
               <button
                 type="button"
                 onClick={() => setSelectedRating('skip')}
-                className={`flex flex-col items-center gap-1.5 rounded-xl border p-4 text-center transition-all ${
+                className={`flex flex-col items-center gap-1.5 rounded-xl border p-4 text-center transition-all cursor-pointer ${
                   selectedRating === 'skip'
-                    ? 'border-rose-500 bg-rose-500/25 text-rose-400 scale-[1.02]'
+                    ? 'border-rose-500 bg-rose-500/25 text-rose-450 scale-[1.02] shadow-[0_0_20px_oklch(0.6_0.22_25/25%)]'
                     : 'border-zinc-800 bg-zinc-950 hover:border-rose-500/40 hover:bg-rose-500/5 text-zinc-400'
                 }`}
               >
-                <XCircle className="h-6 w-6 text-rose-500" />
+                <XCircle className="h-6 w-6 text-rose-500 animate-pulse" />
                 <span className="text-sm font-bold">Skip</span>
                 <span className="text-[10px] text-zinc-500">Not worth it</span>
               </button>
@@ -248,9 +248,9 @@ export default function ReviewSection({
               <button
                 type="button"
                 onClick={() => setSelectedRating('timepass')}
-                className={`flex flex-col items-center gap-1.5 rounded-xl border p-4 text-center transition-all ${
+                className={`flex flex-col items-center gap-1.5 rounded-xl border p-4 text-center transition-all cursor-pointer ${
                   selectedRating === 'timepass'
-                    ? 'border-yellow-500 bg-yellow-500/20 text-yellow-300 scale-[1.02]'
+                    ? 'border-yellow-505 bg-yellow-500/20 text-yellow-300 scale-[1.02] shadow-[0_0_20px_oklch(0.8_0.15_80/20%)]'
                     : 'border-zinc-800 bg-zinc-950 hover:border-yellow-500/40 hover:bg-yellow-500/5 text-zinc-400'
                 }`}
               >
@@ -262,9 +262,9 @@ export default function ReviewSection({
               <button
                 type="button"
                 onClick={() => setSelectedRating('go_for_it')}
-                className={`flex flex-col items-center gap-1.5 rounded-xl border p-4 text-center transition-all ${
+                className={`flex flex-col items-center gap-1.5 rounded-xl border p-4 text-center transition-all cursor-pointer ${
                   selectedRating === 'go_for_it'
-                    ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300 scale-[1.02]'
+                    ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300 scale-[1.02] shadow-[0_0_20px_oklch(0.85_0.16_150/20%)]'
                     : 'border-zinc-800 bg-zinc-950 hover:border-emerald-500/40 hover:bg-emerald-500/5 text-zinc-400'
                 }`}
               >
@@ -276,9 +276,9 @@ export default function ReviewSection({
               <button
                 type="button"
                 onClick={() => setSelectedRating('perfection')}
-                className={`flex flex-col items-center gap-1.5 rounded-xl border p-4 text-center transition-all ${
+                className={`flex flex-col items-center gap-1.5 rounded-xl border p-4 text-center transition-all cursor-pointer ${
                   selectedRating === 'perfection'
-                    ? 'border-green-500 bg-green-500/35 text-green-300 scale-[1.02]'
+                    ? 'border-green-500 bg-green-500/35 text-green-350 scale-[1.02] shadow-[0_0_20px_oklch(0.7_0.18_150/30%)]'
                     : 'border-zinc-800 bg-zinc-950 hover:border-green-500/40 hover:bg-green-500/5 text-zinc-400'
                 }`}
               >

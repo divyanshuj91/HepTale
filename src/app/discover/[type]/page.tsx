@@ -36,7 +36,7 @@ export default async function DiscoverPage({ params }: DiscoverPageProps) {
       <div className="flex flex-col gap-1 border-b border-zinc-800 pb-6">
         <div className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-emerald-400">
           <Sparkles className="h-3 w-3" />
-          OMDb Hub
+          HepTale Hub
         </div>
         <h1 className="text-3xl font-extrabold tracking-tight text-zinc-100 sm:text-4xl">
           {title}

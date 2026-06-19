@@ -72,7 +72,7 @@ export default function ThreadCreator({ currentUser, defaultHub }: ThreadCreator
             <ShieldAlert className="h-10 w-10 text-yellow-400 mx-auto" />
             <h4 className="text-zinc-200 font-bold">Sign In Required</h4>
             <p className="text-zinc-500 text-xs">
-              You must be logged in to create discussion threads in OMDb hubs.
+              You must be logged in to create discussion threads in HepTale hubs.
             </p>
             <div className="flex items-center justify-center gap-2 pt-2">
               <a

@@ -7,7 +7,7 @@ export default function Footer() {
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <div className="flex flex-col items-center gap-1 md:items-start">
             <span className="bg-gradient-to-r from-emerald-400 via-yellow-300 to-rose-500 bg-clip-text text-lg font-black tracking-wider text-transparent">
-              OMDb
+              HepTale
             </span>
             <p className="text-xs text-zinc-600">
               The Mood-Based Movies, TV Shows & Anime Discovery & Reviewing Hub
@@ -22,7 +22,7 @@ export default function Footer() {
           </div>
 
           <div className="text-xs text-zinc-600">
-            © {new Date().getFullYear()} OMDb. Powered by TMDB & JustWatch.
+            © {new Date().getFullYear()} HepTale. Powered by TMDB & JustWatch.
           </div>
         </div>
       </div>
