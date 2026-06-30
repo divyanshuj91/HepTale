@@ -33,7 +33,7 @@ export default function MediaCard({
   const href = `/${media_type}/${id}`
 
   return (
-    <Link href={href} className="group relative flex flex-col border border-primary bg-card text-foreground shadow-[4px_4px_0px_0px_var(--shadow-color)] hover:shadow-[6px_6px_0px_0px_var(--shadow-color)] transition-all duration-200 active:translate-y-0.5 active:shadow-[2px_2px_0px_0px_var(--shadow-color)]">
+    <Link href={href} className="group relative flex flex-col rounded-2xl overflow-hidden border border-primary bg-card text-foreground shadow-[4px_4px_0px_0px_var(--shadow-color)] hover:shadow-[6px_6px_0px_0px_var(--shadow-color)] transition-all duration-200 active:translate-y-0.5 active:shadow-[2px_2px_0px_0px_var(--shadow-color)]">
       {/* Aspect Ratio container for Poster */}
       <div className="relative aspect-[2/3] w-full overflow-hidden bg-background border-b border-primary">
         {posterUrl ? (

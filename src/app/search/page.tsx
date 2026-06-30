@@ -53,7 +53,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 name="q"
                 defaultValue={query}
                 placeholder="Search titles..."
-                className="w-full rounded-none border border-primary bg-card py-2.5 pl-4 pr-10 text-sm text-foreground placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary shadow-[2px_2px_0px_0px_var(--shadow-color)]"
+                className="w-full rounded-xl border border-primary bg-card py-2.5 pl-4 pr-10 text-sm text-foreground placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary shadow-[2px_2px_0px_0px_var(--shadow-color)]"
               />
               <button type="submit" className="absolute right-3 top-3 text-primary hover:opacity-80 cursor-pointer">
                 <SearchIcon className="h-4 w-4" />
@@ -72,7 +72,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               <Link href={`/search?type=movie${query ? `&q=${query}` : ''}${selectedMood ? `&mood=${selectedMood}` : ''}`}>
                 <Button
                   variant={selectedType === 'movie' ? 'default' : 'outline'}
-                  className={`w-full justify-start rounded-none uppercase tracking-widest text-xs font-bold ${selectedType === 'movie' ? 'bg-primary text-white border-primary shadow-[2px_2px_0px_0px_var(--shadow-color)]' : 'border-primary text-primary hover:bg-muted'}`}
+                  className={`w-full justify-start rounded-xl uppercase tracking-widest text-xs font-bold ${selectedType === 'movie' ? 'bg-primary text-white border-primary shadow-[2px_2px_0px_0px_var(--shadow-color)]' : 'border-primary text-primary hover:bg-muted'}`}
                 >
                   <Film className="mr-2 h-4 w-4" />
                   Films
@@ -81,7 +81,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               <Link href={`/search?type=tv${query ? `&q=${query}` : ''}${selectedMood ? `&mood=${selectedMood}` : ''}`}>
                 <Button
                   variant={selectedType === 'tv' ? 'default' : 'outline'}
-                  className={`w-full justify-start rounded-none uppercase tracking-widest text-xs font-bold ${selectedType === 'tv' ? 'bg-primary text-white border-primary shadow-[2px_2px_0px_0px_var(--shadow-color)]' : 'border-primary text-primary hover:bg-muted'}`}
+                  className={`w-full justify-start rounded-xl uppercase tracking-widest text-xs font-bold ${selectedType === 'tv' ? 'bg-primary text-white border-primary shadow-[2px_2px_0px_0px_var(--shadow-color)]' : 'border-primary text-primary hover:bg-muted'}`}
                 >
                   <Tv className="mr-2 h-4 w-4" />
                   TV Broadcasts
@@ -113,7 +113,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                   >
                     <Button
                       variant={isSelected ? 'default' : 'outline'}
-                      className={`w-full justify-start rounded-none uppercase tracking-widest text-xs font-bold ${isSelected ? 'bg-primary text-white border-primary shadow-[2px_2px_0px_0px_var(--shadow-color)]' : 'border-primary text-primary hover:bg-muted'}`}
+                      className={`w-full justify-start rounded-xl uppercase tracking-widest text-xs font-bold ${isSelected ? 'bg-primary text-white border-primary shadow-[2px_2px_0px_0px_var(--shadow-color)]' : 'border-primary text-primary hover:bg-muted'}`}
                     >
                       <Filter className="mr-2 h-3.5 w-3.5" />
                       {mood.name}

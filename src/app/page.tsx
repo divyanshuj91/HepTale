@@ -102,7 +102,7 @@ export default async function HomePage() {
               <Link
                 key={mood.id}
                 href={`/search?mood=${mood.id}`}
-                className="flex flex-col items-center justify-center border border-primary bg-card p-6 text-center shadow-[4px_4px_0px_0px_var(--shadow-color)] hover:shadow-[6px_6px_0px_0px_var(--shadow-color)] transition-all duration-200 active:translate-y-0.5 active:shadow-[2px_2px_0px_0px_var(--shadow-color)]"
+                className="flex flex-col items-center justify-center rounded-2xl border border-primary bg-card p-6 text-center shadow-[4px_4px_0px_0px_var(--shadow-color)] hover:shadow-[6px_6px_0px_0px_var(--shadow-color)] transition-all duration-200 active:translate-y-0.5 active:shadow-[2px_2px_0px_0px_var(--shadow-color)]"
               >
                 <div className="flex h-12 w-12 items-center justify-center border border-primary bg-background mb-4 shadow-[2px_2px_0px_0px_var(--shadow-color)]">
                   {getMoodIcon(mood.id)}

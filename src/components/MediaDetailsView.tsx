@@ -89,11 +89,11 @@ export default async function MediaDetailsView({
           <div className="flex flex-col gap-6 md:flex-row md:items-end">
             {/* Poster Card */}
             {posterUrl ? (
-              <div className="w-[150px] md:w-[220px] flex-shrink-0 border border-primary p-1 bg-background shadow-[4px_4px_0px_0px_var(--shadow-color)]">
-                <img src={posterUrl} alt={title} className="w-full aspect-[2/3] object-cover" />
+              <div className="w-[150px] md:w-[220px] flex-shrink-0 rounded-2xl overflow-hidden border border-primary p-1 bg-background shadow-[4px_4px_0px_0px_var(--shadow-color)]">
+                <img src={posterUrl} alt={title} className="w-full aspect-[2/3] object-cover rounded-xl" />
               </div>
             ) : (
-              <div className="w-[150px] md:w-[220px] aspect-[2/3] flex-shrink-0 border border-primary bg-muted/20 flex items-center justify-center p-4 text-center text-sm font-serif italic text-muted-foreground shadow-[4px_4px_0px_0px_var(--shadow-color)]">
+              <div className="w-[150px] md:w-[220px] aspect-[2/3] flex-shrink-0 rounded-2xl border border-primary bg-muted/20 flex items-center justify-center p-4 text-center text-sm font-serif italic text-muted-foreground shadow-[4px_4px_0px_0px_var(--shadow-color)]">
                 No Poster Available
               </div>
             )}
@@ -102,27 +102,27 @@ export default async function MediaDetailsView({
             <div className="space-y-4">
               <div className="space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="border border-primary bg-primary text-primary-foreground px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest shadow-[2px_2px_0px_0px_var(--shadow-color)]">
+                  <span className="border border-primary bg-primary text-primary-foreground px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest rounded-md shadow-[2px_2px_0px_0px_var(--shadow-color)]">
                     {mediaType === 'movie' ? 'Film' : 'TV Broadcast'}
                   </span>
                   {voteAverage > 0 && (
-                    <span className="flex items-center gap-1 border border-primary bg-background px-2 py-0.5 text-[10px] font-bold text-primary shadow-[2px_2px_0px_0px_var(--shadow-color)]" title="TMDB Vote Average">
+                    <span className="flex items-center gap-1 border border-primary bg-background px-2 py-0.5 text-[10px] font-bold text-primary rounded-md shadow-[2px_2px_0px_0px_var(--shadow-color)]" title="TMDB Vote Average">
                       <Star className="h-3 w-3 fill-primary text-primary" />
                       {voteAverage.toFixed(1)} TMDB
                     </span>
                   )}
                   {omdbRatings.imdb && (
-                    <span className="flex items-center border border-primary bg-[#f5c518] text-zinc-950 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider shadow-[2px_2px_0px_0px_var(--shadow-color)]" title="IMDb Rating">
+                    <span className="flex items-center border border-primary bg-[#f5c518] text-zinc-950 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-md shadow-[2px_2px_0px_0px_var(--shadow-color)]" title="IMDb Rating">
                       IMDb {omdbRatings.imdb}
                     </span>
                   )}
                   {omdbRatings.rottenTomatoes && (
-                    <span className="flex items-center border border-primary bg-[#e53935] text-white px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider shadow-[2px_2px_0px_0px_var(--shadow-color)]" title="Rotten Tomatoes Score">
+                    <span className="flex items-center border border-primary bg-[#e53935] text-white px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-md shadow-[2px_2px_0px_0px_var(--shadow-color)]" title="Rotten Tomatoes Score">
                       🍅 {omdbRatings.rottenTomatoes}
                     </span>
                   )}
                   {omdbRatings.metacritic && (
-                    <span className="flex items-center border border-primary bg-[#00fc87] text-zinc-950 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider shadow-[2px_2px_0px_0px_var(--shadow-color)]" title="Metacritic Score">
+                    <span className="flex items-center border border-primary bg-[#00fc87] text-zinc-950 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-md shadow-[2px_2px_0px_0px_var(--shadow-color)]" title="Metacritic Score">
                       MC {omdbRatings.metacritic}
                     </span>
                   )}
@@ -219,20 +219,20 @@ export default async function MediaDetailsView({
                   {streamProviders.map((provider: any) => (
                     <div
                       key={provider.provider_id}
-                      className="flex items-center gap-2 border border-primary bg-card p-2 pr-4 shadow-[2px_2px_0px_0px_var(--shadow-color)] hover:border-ring transition-colors"
+                      className="flex items-center gap-2 rounded-xl border border-primary bg-card p-2 pr-4 shadow-[2px_2px_0px_0px_var(--shadow-color)] hover:border-ring transition-colors"
                       title={provider.provider_name}
                     >
                       <img
                         src={`https://image.tmdb.org/t/p/original${provider.logo_path}`}
                         alt={provider.provider_name}
-                        className="h-8 w-8"
+                        className="h-8 w-8 rounded-md"
                       />
                       <span className="text-xs font-bold uppercase tracking-wider text-foreground">{provider.provider_name}</span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="border border-primary bg-muted/10 p-4 text-center">
+                <div className="border border-primary bg-muted/10 p-4 text-center rounded-xl">
                   <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">
                     No streaming platforms detected in your region. Check JustWatch website for rent/buy options.
                   </p>
@@ -255,7 +255,7 @@ export default async function MediaDetailsView({
                       : null
                     return (
                       <div key={actor.id} className="w-[110px] flex-shrink-0 flex flex-col items-center text-center">
-                        <div className="h-20 w-20 bg-background border border-primary overflow-hidden mb-2 shadow-[2px_2px_0px_0px_var(--shadow-color)] transition-transform duration-200 hover:scale-105">
+                        <div className="h-20 w-20 bg-background border border-primary rounded-full overflow-hidden mb-2 shadow-[2px_2px_0px_0px_var(--shadow-color)] transition-transform duration-200 hover:scale-105">
                           {pic ? (
                             <img src={pic} alt={actor.name} className="h-full w-full object-cover" />
                           ) : (
@@ -280,7 +280,7 @@ export default async function MediaDetailsView({
                   <Video className="h-4.5 w-4.5 text-primary" />
                   Watch Trailer
                 </h2>
-                <div className="relative aspect-video w-full overflow-hidden border border-primary bg-background shadow-[4px_4px_0px_0px_var(--shadow-color)]">
+                <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-primary bg-background shadow-[4px_4px_0px_0px_var(--shadow-color)]">
                   <iframe
                     src={`https://www.youtube.com/embed/${trailerKey}`}
                     title={`${title} Official Trailer`}
