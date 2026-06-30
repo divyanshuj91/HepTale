@@ -33,9 +33,7 @@ export default async function HomePage() {
 
   // Use the top trending movie for the Hero backdrop
   const heroMedia = movies[2] || movies[0]
-  const heroBackdrop = heroMedia?.backdrop_path
-    ? `https://image.tmdb.org/t/p/original${heroMedia.backdrop_path}`
-    : null
+  const heroBackdrop = heroMedia?.poster_path || null
 
   return (
     <div className="flex flex-col pb-16 bg-background text-foreground transition-colors duration-200">

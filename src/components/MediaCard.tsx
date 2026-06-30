@@ -26,8 +26,9 @@ export default function MediaCard({
   const dateStr = release_date || first_air_date
   const year = dateStr ? new Date(dateStr).getFullYear() : null
   const posterUrl = poster_path
-    ? `https://image.tmdb.org/t/p/w500${poster_path}`
+    ? (poster_path.startsWith('http') ? poster_path : `https://image.tmdb.org/t/p/w500${poster_path}`)
     : null
+
 
   const href = `/${media_type}/${id}`
 

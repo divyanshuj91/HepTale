@@ -28,8 +28,8 @@ export default async function MediaDetailsView({
   const overview = tmdbData.overview
   const releaseDate = tmdbData.release_date || tmdbData.first_air_date
   const year = releaseDate ? new Date(releaseDate).getFullYear() : null
-  const posterPath = tmdbData.poster_path
-  const backdropPath = tmdbData.backdrop_path
+  const posterPath = tmdbData.poster_path as string | null
+  const backdropPath = tmdbData.backdrop_path as string | null
   const genres = tmdbData.genres || []
   const runtime = tmdbData.runtime // Movie runtime in minutes
   const seasons = tmdbData.number_of_seasons // TV seasons count
@@ -60,12 +60,13 @@ export default async function MediaDetailsView({
       self.findIndex((p) => p.provider_id === provider.provider_id) === index
   ) // Deduplicate providers
 
-  const backdropUrl = backdropPath
-    ? `https://image.tmdb.org/t/p/original${backdropPath}`
-    : null
   const posterUrl = posterPath
-    ? `https://image.tmdb.org/t/p/w500${posterPath}`
+    ? (posterPath.startsWith('http') ? posterPath : `https://image.tmdb.org/t/p/w500${posterPath}`)
     : null
+  const backdropUrl = backdropPath
+    ? (backdropPath.startsWith('http') ? backdropPath : `https://image.tmdb.org/t/p/original${backdropPath}`)
+    : posterUrl
+
 
   return (
     <div className="pb-16 flex flex-col bg-background text-foreground transition-colors duration-200">
