@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { getTrendingMovies, getTrendingTV, getTrendingAnime } from '@/lib/tmdb'
 import MediaCard from '@/components/MediaCard'
 import { MOODS } from '@/lib/tmdb'
-import { Play, Flame, Heart, Smile, Brain, Sparkles } from 'lucide-react'
+import { Play, Flame, Heart, Smile, Brain, Sparkles, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export const revalidate = 3600 // Revalidate page every hour
@@ -11,30 +11,15 @@ export const revalidate = 3600 // Revalidate page every hour
 function getMoodIcon(moodId: string) {
   switch (moodId) {
     case 'feel-good':
-      return <Smile className="h-6 w-6 text-emerald-400" />
+      return <Smile className="h-6 w-6 text-secondary" />
     case 'gritty':
-      return <Flame className="h-6 w-6 text-orange-400" />
+      return <Flame className="h-6 w-6 text-primary" />
     case 'tearjerker':
-      return <Heart className="h-6 w-6 text-rose-400" />
+      return <Heart className="h-6 w-6 text-destructive" />
     case 'mind-bending':
-      return <Brain className="h-6 w-6 text-cyan-400" />
+      return <Brain className="h-6 w-6 text-accent-foreground" />
     default:
-      return <Sparkles className="h-6 w-6 text-zinc-400" />
-  }
-}
-
-function getMoodColorClass(moodId: string) {
-  switch (moodId) {
-    case 'feel-good':
-      return 'from-emerald-500/10 to-yellow-500/5 hover:border-emerald-400/40 card-glow-emerald border-emerald-500/20'
-    case 'gritty':
-      return 'from-orange-500/10 to-red-500/5 hover:border-orange-400/40 card-glow-gold border-orange-500/20'
-    case 'tearjerker':
-      return 'from-rose-500/10 to-purple-500/5 hover:border-rose-400/40 card-glow-rose border-rose-500/20'
-    case 'mind-bending':
-      return 'from-cyan-500/10 to-blue-500/5 hover:border-cyan-400/40 card-glow-emerald border-cyan-500/20'
-    default:
-      return 'from-zinc-900 to-zinc-950 border-zinc-800'
+      return <Sparkles className="h-6 w-6 text-muted-foreground" />
   }
 }
 
@@ -52,48 +37,47 @@ export default async function HomePage() {
     : null
 
   return (
-    <div className="flex flex-col pb-12">
+    <div className="flex flex-col pb-16 bg-background text-foreground transition-colors duration-200">
       {/* 1. Cinematic Hero Banner */}
       {heroMedia && (
-        <section className="relative flex min-h-[60vh] md:min-h-[70vh] w-full items-end justify-start overflow-hidden py-16">
+        <section className="relative flex min-h-[65vh] md:min-h-[75vh] w-full items-end justify-start overflow-hidden py-16 border-b border-primary">
           {/* Background backdrop image with dual dark gradient overlays */}
           {heroBackdrop ? (
             <div className="absolute inset-0 -z-10">
               <img
                 src={heroBackdrop}
                 alt={heroMedia.title || 'Hero Movie'}
-                className="h-full w-full object-cover object-center opacity-45 scale-100 transition-transform duration-10000 ease-out"
+                className="h-full w-full object-cover object-center opacity-35"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/70 to-zinc-950/20" />
-              <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/50 to-transparent" />
+              <div className="absolute inset-0 marquee-gradient" />
             </div>
           ) : (
-            <div className="absolute inset-0 -z-10 bg-gradient-to-tr from-zinc-900 via-zinc-950 to-zinc-900" />
+            <div className="absolute inset-0 -z-10 bg-gradient-to-tr from-background via-primary/5 to-background" />
           )}
 
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 max-w-container-max">
             <div className="max-w-2xl space-y-4">
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400 ring-1 ring-emerald-500/30">
-                <Sparkles className="h-3 w-3" />
-                Featured Release
+              <div className="inline-flex items-center gap-1.5 border border-primary bg-background px-3.5 py-1 text-[10px] font-bold uppercase tracking-widest text-primary shadow-[2px_2px_0px_0px_var(--shadow-color)]">
+                <Sparkles className="h-3 w-3 fill-primary text-primary" />
+                Feature Presentation
               </div>
-              <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl text-zinc-100">
+              <h1 className="text-4xl font-serif italic font-bold tracking-tight sm:text-5xl md:text-6xl text-white drop-shadow-lg leading-tight">
                 {heroMedia.title}
               </h1>
-              <p className="line-clamp-3 text-base text-zinc-300 md:text-lg">
+              <p className="line-clamp-3 font-serif text-base text-white/90 md:text-lg max-w-xl leading-relaxed drop-shadow-md">
                 {heroMedia.overview}
               </p>
               
-              <div className="flex flex-wrap gap-3 pt-2">
+              <div className="flex flex-wrap gap-4 pt-4">
                 <Link href={`/movie/${heroMedia.id}`}>
-                  <Button className="bg-emerald-400 font-bold text-zinc-950 hover:bg-emerald-300 shadow-[0_0_20px_oklch(0.85_0.16_150/20%)] transition-all cursor-pointer">
-                    <Play className="mr-2 h-4 w-4 fill-zinc-950" />
+                  <Button className="rounded-none bg-primary text-white border border-primary px-8 py-3 h-auto font-sans font-bold uppercase tracking-widest text-xs shadow-[4px_4px_0px_0px_var(--shadow-color)] hover:opacity-95 active:translate-y-0.5 active:shadow-[2px_2px_0px_0px_var(--shadow-color)] transition-all cursor-pointer">
+                    <Play className="mr-2 h-3.5 w-3.5 fill-white text-white" />
                     Review & Details
                   </Button>
                 </Link>
                 <Link href="/search">
-                  <Button variant="outline" className="border-zinc-800 bg-zinc-900/20 text-zinc-100 hover:bg-zinc-900/60 hover:text-white transition-all cursor-pointer">
-                    Explore More
+                  <Button variant="outline" className="rounded-none border-white bg-transparent text-white px-8 py-3 h-auto font-sans font-bold uppercase tracking-widest text-xs hover:bg-white hover:text-primary transition-all cursor-pointer">
+                    Explore Archives
                   </Button>
                 </Link>
               </div>
@@ -102,49 +86,52 @@ export default async function HomePage() {
         </section>
       )}
 
-      <div className="container mx-auto px-4 mt-8 space-y-12">
+      <div className="container mx-auto px-4 mt-12 max-w-container-max space-y-16">
         {/* 2. Mood-Based Discovery Board */}
-        <section className="space-y-4">
-          <div className="flex flex-col gap-1">
-            <h2 className="text-xl font-bold tracking-tight text-zinc-100 md:text-2xl">
-              How are you feeling today?
+        <section className="space-y-6">
+          <div className="flex flex-col gap-1 border-b border-primary pb-3">
+            <h2 className="text-2xl font-serif italic font-bold tracking-tight text-primary md:text-3xl">
+              Curator's Atmosphere Select
             </h2>
-            <p className="text-sm text-zinc-500">
-              Discover titles tailored to your emotional state or vibe.
+            <p className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
+              Filter the cinematic library based on thematic resonance and mood.
             </p>
           </div>
           
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
             {MOODS.map((mood) => (
               <Link
                 key={mood.id}
                 href={`/search?mood=${mood.id}`}
-                className={`flex flex-col items-center justify-center rounded-2xl border border-zinc-800 bg-zinc-900/10 p-6 text-center shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-zinc-900/40 hover:shadow-2xl ${getMoodColorClass(mood.id)}`}
+                className="flex flex-col items-center justify-center border border-primary bg-card p-6 text-center shadow-[4px_4px_0px_0px_var(--shadow-color)] hover:shadow-[6px_6px_0px_0px_var(--shadow-color)] transition-all duration-200 active:translate-y-0.5 active:shadow-[2px_2px_0px_0px_var(--shadow-color)]"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-950/60 ring-1 ring-zinc-800 mb-3">
+                <div className="flex h-12 w-12 items-center justify-center border border-primary bg-background mb-4 shadow-[2px_2px_0px_0px_var(--shadow-color)]">
                   {getMoodIcon(mood.id)}
                 </div>
-                <span className="text-base font-bold text-zinc-100">{mood.name}</span>
-                <span className="mt-1 text-xs text-zinc-500">Explore mood</span>
+                <span className="text-base font-serif italic font-bold text-primary">{mood.name}</span>
+                <span className="mt-1.5 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Explore vibe</span>
               </Link>
             ))}
           </div>
         </section>
 
         {/* 3. Trending Movies Row */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold tracking-tight text-zinc-100 md:text-2xl">
-              Trending Movies
-            </h2>
-            <Link href="/discover/movie" className="text-sm font-semibold text-emerald-400 hover:underline">
-              See all
+        <section className="space-y-6">
+          <div className="flex items-end justify-between border-b border-primary pb-2">
+            <div className="flex flex-col gap-0.5">
+              <h2 className="text-2xl font-serif italic font-bold text-primary">
+                Daily Selections
+              </h2>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Trending Film Reel</span>
+            </div>
+            <Link href="/discover/movie" className="flex items-center gap-1 text-xs font-bold uppercase tracking-widest border-b border-primary pb-0.5 hover:text-primary transition-all">
+              Browse All <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
           
-          <div className="flex w-full gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
+          <div className="flex w-full gap-6 overflow-x-auto pb-6 custom-scrollbar">
             {movies.map((movie: any) => (
-              <div key={movie.id} className="w-[180px] flex-shrink-0 sm:w-[200px]">
+              <div key={movie.id} className="w-[180px] flex-shrink-0 sm:w-[220px]">
                 <MediaCard {...movie} media_type="movie" />
               </div>
             ))}
@@ -152,19 +139,22 @@ export default async function HomePage() {
         </section>
 
         {/* 4. Trending TV Shows Row */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold tracking-tight text-zinc-100 md:text-2xl">
-              Hot TV Shows
-            </h2>
-            <Link href="/discover/tv" className="text-sm font-semibold text-emerald-400 hover:underline">
-              See all
+        <section className="space-y-6">
+          <div className="flex items-end justify-between border-b border-primary pb-2">
+            <div className="flex flex-col gap-0.5">
+              <h2 className="text-2xl font-serif italic font-bold text-primary">
+                Television Archive
+              </h2>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Highly Reviewed Broadcasts</span>
+            </div>
+            <Link href="/discover/tv" className="flex items-center gap-1 text-xs font-bold uppercase tracking-widest border-b border-primary pb-0.5 hover:text-primary transition-all">
+              Browse All <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
           
-          <div className="flex w-full gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
+          <div className="flex w-full gap-6 overflow-x-auto pb-6 custom-scrollbar">
             {tvShows.map((show: any) => (
-              <div key={show.id} className="w-[180px] flex-shrink-0 sm:w-[200px]">
+              <div key={show.id} className="w-[180px] flex-shrink-0 sm:w-[220px]">
                 <MediaCard {...show} media_type="tv" />
               </div>
             ))}
@@ -172,19 +162,22 @@ export default async function HomePage() {
         </section>
 
         {/* 5. Trending Anime Row */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold tracking-tight text-zinc-100 md:text-2xl">
-              Hot Anime Series
-            </h2>
-            <Link href="/discover/anime" className="text-sm font-semibold text-emerald-400 hover:underline">
-              See all
+        <section className="space-y-6">
+          <div className="flex items-end justify-between border-b border-primary pb-2">
+            <div className="flex flex-col gap-0.5">
+              <h2 className="text-2xl font-serif italic font-bold text-primary">
+                Illustrated Works
+              </h2>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Featured Anime Series</span>
+            </div>
+            <Link href="/discover/anime" className="flex items-center gap-1 text-xs font-bold uppercase tracking-widest border-b border-primary pb-0.5 hover:text-primary transition-all">
+              Browse All <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
           
-          <div className="flex w-full gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
+          <div className="flex w-full gap-6 overflow-x-auto pb-6 custom-scrollbar">
             {anime.map((show: any) => (
-              <div key={show.id} className="w-[180px] flex-shrink-0 sm:w-[200px]">
+              <div key={show.id} className="w-[180px] flex-shrink-0 sm:w-[220px]">
                 <MediaCard {...show} media_type="tv" />
               </div>
             ))}
