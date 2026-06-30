@@ -73,7 +73,7 @@
   --chart-3: #735c00;
   --chart-4: #ba1a1a;
   --chart-5: #8c7071;
-  --radius: 0px;
+  --radius: 0.75rem;
   
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-playfair), Georgia, serif;
@@ -115,7 +115,7 @@
   --chart-3: #e9c349;
   --chart-4: #ffb4ab;
   --chart-5: #a89091;
-  --radius: 0px;
+  --radius: 0.75rem;
   
   --shadow-color: rgba(0, 0, 0, 0.5);
   --marquee-fade: #120c0d;

@@ -33,9 +33,7 @@ export default async function HomePage() {
 
   // Use the top trending movie for the Hero backdrop
   const heroMedia = movies[2] || movies[0]
-  const heroBackdrop = heroMedia?.backdrop_path
-    ? `https://image.tmdb.org/t/p/original${heroMedia.backdrop_path}`
-    : null
+  const heroBackdrop = heroMedia?.poster_path || null
 
   return (
     <div className="flex flex-col pb-16 bg-background text-foreground transition-colors duration-200">
@@ -104,7 +102,7 @@ export default async function HomePage() {
               <Link
                 key={mood.id}
                 href={`/search?mood=${mood.id}`}
-                className="flex flex-col items-center justify-center border border-primary bg-card p-6 text-center shadow-[4px_4px_0px_0px_var(--shadow-color)] hover:shadow-[6px_6px_0px_0px_var(--shadow-color)] transition-all duration-200 active:translate-y-0.5 active:shadow-[2px_2px_0px_0px_var(--shadow-color)]"
+                className="flex flex-col items-center justify-center rounded-2xl border border-primary bg-card p-6 text-center shadow-[4px_4px_0px_0px_var(--shadow-color)] hover:shadow-[6px_6px_0px_0px_var(--shadow-color)] transition-all duration-200 active:translate-y-0.5 active:shadow-[2px_2px_0px_0px_var(--shadow-color)]"
               >
                 <div className="flex h-12 w-12 items-center justify-center border border-primary bg-background mb-4 shadow-[2px_2px_0px_0px_var(--shadow-color)]">
                   {getMoodIcon(mood.id)}

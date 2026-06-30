@@ -1,421 +1,445 @@
-// TMDB API Client wrapper with rich mockup fallbacks
+// OMDb API Client wrapper with rich mockup fallbacks (replaces TMDB)
 
-const TMDB_API_URL = 'https://api.themoviedb.org/3';
+const OMDB_API_URL = 'https://www.omdbapi.com/';
 
-// Fallback Mock Data for movies, TV shows, and anime
-export const MOCK_TRENDING_MOVIES = [
-  {
-    id: 1011985,
-    title: 'Kung Fu Panda 4',
-    media_type: 'movie',
-    overview: 'Po is geared up to become the spiritual leader of his Valley of Peace, but also needs someone to take his place as the Dragon Warrior.',
-    poster_path: '/kDp1vUB3jTLm6wSbXXeZj6qGl4t.jpg',
-    backdrop_path: '/1X5IWuGJZMC3m013kQ2wzczgCbs.jpg',
-    release_date: '2024-03-02',
-    vote_average: 7.2,
-  },
-  {
-    id: 823464,
-    title: 'Godzilla x Kong: The New Empire',
-    media_type: 'movie',
-    overview: 'Following their explosive showdown, Godzilla and Kong must reunite against a colossal undiscovered threat hidden within our world.',
-    poster_path: '/v43Teu7t7t0dqCj26rT6jGB4J9M.jpg',
-    backdrop_path: '/sR0gJDhrd14OFwV0K1KgflSR2FU.jpg',
-    release_date: '2024-03-27',
-    vote_average: 7.3,
-  },
-  {
-    id: 693134,
-    title: 'Dune: Part Two',
-    media_type: 'movie',
-    overview: 'Follow the mythic journey of Paul Atreides as he unites with Chani and the Fremen while on a path of revenge against the conspirators.',
-    poster_path: '/czembDcB20oAD7ysRZr8w56214X.jpg',
-    backdrop_path: '/xOMo8BRK7jaNDvUeQerFJSju730.jpg',
-    release_date: '2024-02-27',
-    vote_average: 8.3,
-  },
-  {
-    id: 872585,
-    title: 'Oppenheimer',
-    media_type: 'movie',
-    overview: 'The story of J. Robert Oppenheimer\'s role in the development of the atomic bomb during World War II.',
-    poster_path: '/8Gxv8gS0W05R2qKVq1e5El4X7XG.jpg',
-    backdrop_path: '/rM52HhG5F275XWp1xS7P3Zk7DqR.jpg',
-    release_date: '2023-07-19',
-    vote_average: 8.1,
-  },
-  {
-    id: 569094,
-    title: 'Spider-Man: Across the Spider-Verse',
-    media_type: 'movie',
-    overview: 'After reuniting with Gwen Stacy, Brooklyn\'s full-time, friendly neighborhood Spider-Man is catapulted across the Multiverse.',
-    poster_path: '/8Gxv8gS0W05R2qKVq1e5El4X7XG.jpg',
-    backdrop_path: '/4mc46Wl5m9Hk9Ex1i456Zc8d9x1.jpg',
-    release_date: '2023-05-31',
-    vote_average: 8.4,
-  },
+// Bidirectional ID mapping: 'tt15239678' <-> 15239678
+export function imdbIdToId(imdbId: string): number {
+  const match = imdbId.match(/\d+/);
+  return match ? parseInt(match[0], 10) : 0;
+}
+
+export function idToImdbId(id: number): string {
+  const numStr = String(id);
+  const padded = numStr.padStart(7, '0');
+  return `tt${padded}`;
+}
+
+// Curated IMDb IDs for Home Page sections
+export const NEW_RELEASES_IDS = [
+  'tt10366206', // Inside Out 2
+  'tt6263850',  // Deadpool & Wolverine
+  'tt11389872', // Kingdom of the Planet of the Apes
+  'tt12037194', // Furiosa: A Mad Max Saga
+  'tt16428756', // Challengers
+  'tt17279496'  // Civil War
 ];
 
-export const MOCK_TRENDING_TV = [
-  {
-    id: 1396,
-    name: 'Breaking Bad',
-    media_type: 'tv',
-    overview: 'Walter White, a chemistry teacher, discovers he has cancer and decides to get into the meth-making business to repay his medical debts.',
-    poster_path: '/ztkUQn2C1V4RP41i4nGoa7iA52c.jpg',
-    backdrop_path: '/9fae8mo0Rcl446fMTA2i8eU482N.jpg',
-    first_air_date: '2008-01-20',
-    vote_average: 8.9,
-  },
-  {
-    id: 100088,
-    name: 'The Last of Us',
-    media_type: 'tv',
-    overview: 'Twenty years after modern civilization has been destroyed, Joel is hired to smuggle Ellie, a 14-year-old girl, out of an oppressive quarantine zone.',
-    poster_path: '/u3bZgnWJbb6Z1wPqHbgD57gaCuL.jpg',
-    backdrop_path: '/uDgy6hyPd6i6gWhZc7j5i8t714f.jpg',
-    first_air_date: '2023-01-15',
-    vote_average: 8.6,
-  },
-  {
-    id: 110492,
-    name: 'Severance',
-    media_type: 'tv',
-    overview: 'Mark leads a team of office workers whose memories have been surgically divided between their work and personal lives.',
-    poster_path: '/qS4KCEr6tB5FqLzKjN2Z7K6vT6w.jpg',
-    backdrop_path: '/7mYwS6j2C6lZ4P0h8v5j2z3H4j4.jpg',
-    first_air_date: '2022-02-17',
-    vote_average: 8.4,
-  },
-  {
-    id: 94605,
-    name: 'Arcane',
-    media_type: 'tv',
-    overview: 'Amidst the escalating discord between the rich city of Piltover and the gritty underbelly of Zaun, two sisters fight on opposing sides.',
-    poster_path: '/fqldE2v11X7J1n7sfPPsuhwb43S.jpg',
-    backdrop_path: '/7q64LjHETvqllnSDjLHj7t1pqJb.jpg',
-    first_air_date: '2021-11-06',
-    vote_average: 8.7,
-  },
+export const TRENDING_MOVIES_IDS = [
+  'tt15239678', // Dune: Part Two
+  'tt15398776', // Oppenheimer
+  'tt0814155',  // Interstellar
+  'tt15092608', // Spider-Man: Across the Spider-Verse
+  'tt6710474'   // Everything Everywhere All at Once
 ];
 
-export const MOCK_TRENDING_ANIME = [
-  {
-    id: 209867,
-    name: 'Frieren: Beyond Journey\'s End',
-    media_type: 'tv',
-    overview: 'Mage Frieren and her courageous fellow adventurers have defeated the Demon King, bringing peace to the land. But Frieren must navigate a different kind of journey.',
-    poster_path: '/r942asgj5i0d2f026aef66236fa.jpg',
-    backdrop_path: '/9fae8mo0Rcl446fMTA2i8eU482N.jpg',
-    first_air_date: '2023-09-29',
-    vote_average: 8.9,
-  },
-  {
-    id: 85244,
-    name: 'Demon Slayer: Kimetsu no Yaiba',
-    media_type: 'tv',
-    overview: 'It is the Taisho Period in Japan. Tanjiro, a kindhearted boy who sells charcoal for a living, finds his family slaughtered by a demon.',
-    poster_path: '/xU7w4537XU062b32f26aef66236fb.jpg',
-    backdrop_path: '/hZzt5145Jj5136ja2c7fJp76f7a.jpg',
-    first_air_date: '2019-04-06',
-    vote_average: 8.7,
-  },
-  {
-    id: 1429,
-    name: 'Attack on Titan',
-    media_type: 'tv',
-    overview: 'Several hundred years ago, humans were nearly exterminated by Titans. Today, humanity is forced to live inside giant concentric walls.',
-    poster_path: '/k9741asgj5i0d2f026aef66236fa.jpg',
-    backdrop_path: '/uDgy6hyPd6i6gWhZc7j5i8t714f.jpg',
-    first_air_date: '2013-04-07',
-    vote_average: 8.7,
-  },
-  {
-    id: 95479,
-    name: 'Jujutsu Kaisen',
-    media_type: 'tv',
-    overview: 'Yuji Itadori is a boy with tremendous physical strength, though he lives a completely ordinary high school life.',
-    poster_path: '/hZzt5145Jj5136ja2c7fJp76f7a.jpg',
-    backdrop_path: '/7mYwS6j2C6lZ4P0h8v5j2z3H4j4.jpg',
-    first_air_date: '2020-10-03',
-    vote_average: 8.6,
-  },
+export const TRENDING_TV_IDS = [
+  'tt0903747',  // Breaking Bad
+  'tt14243818', // The Last of Us
+  'tt27987458', // Shōgun
+  'tt11280740', // Severance
+  'tt14452778'  // The Bear
 ];
 
-export const MOCK_NEW_RELEASES = [
-  {
-    id: 1022789,
-    title: 'Inside Out 2',
-    media_type: 'movie',
-    overview: 'Teenager Riley\'s mind headquarters is undergoing a sudden demolition to make room for something entirely unexpected: new Emotions!',
-    poster_path: '/vpnVM9B6NMmQjGJWZ0Tyh0v2jOQ.jpg',
-    backdrop_path: '/stKGOmvmv4v25ajN6n66nZ66oR4.jpg',
-    release_date: '2024-06-12',
-    vote_average: 7.7,
-  },
-  {
-    id: 823464,
-    title: 'Godzilla x Kong: The New Empire',
-    media_type: 'movie',
-    overview: 'Following their explosive showdown, Godzilla and Kong must reunite against a colossal undiscovered threat hidden within our world.',
-    poster_path: '/v43Teu7t7t0dqCj26rT6jGB4J9M.jpg',
-    backdrop_path: '/sR0gJDhrd14OFwV0K1KgflSR2FU.jpg',
-    release_date: '2024-03-27',
-    vote_average: 7.3,
-  },
-  {
-    id: 653346,
-    title: 'Kingdom of the Planet of the Apes',
-    media_type: 'movie',
-    overview: 'Many years after the reign of Caesar, a young ape goes on a journey that will lead him to question everything he has been taught about the past.',
-    poster_path: '/gK5gxAx6az8hlw45azb8z6G1X7b.jpg',
-    backdrop_path: '/fqldE2v11X7J1n7sfPPsuhwb43S.jpg',
-    release_date: '2024-05-08',
-    vote_average: 7.1,
-  },
-  {
-    id: 786892,
-    title: 'Furiosa: A Mad Max Saga',
-    media_type: 'movie',
-    overview: 'The origin story of renegade warrior Furiosa before her encounter and teamup with Mad Max.',
-    poster_path: '/iND8VrxU2w1j8pZ1H75azH76azA.jpg',
-    backdrop_path: '/xOMo8BRK7jaNDvUeQerFJSju730.jpg',
-    release_date: '2024-05-22',
-    vote_average: 7.2,
-  },
+export const TRENDING_ANIME_IDS = [
+  'tt27078282', // Frieren: Beyond Journey's End
+  'tt8333036',  // Demon Slayer: Kimetsu no Yaiba
+  'tt2560140',  // Attack on Titan
+  'tt12343534', // Jujutsu Kaisen
+  'tt0877057'   // Death Note
 ];
 
+// Curated YouTube Trailers Lookup Map
+export const TRAILER_MAP: Record<string, string> = {
+  'tt10366206': 'LEjhY15eCx0', // Inside Out 2
+  'tt6263850': '73_1biulkYw',  // Deadpool & Wolverine
+  'tt11389872': 'xtXXjpEupGE', // Kingdom of the Planet of the Apes
+  'tt12037194': 'XJMuhwVlca4', // Furiosa
+  'tt16428756': 'Vov5aTBc3V8', // Challengers
+  'tt17279496': 'c2G0lhXCcBc', // Civil War
+  'tt15239678': 'U2Qp5pL3ovA', // Dune 2
+  'tt15398776': 'uYPbbksJxIg', // Oppenheimer
+  'tt0814155': 'zSWdZAIB5nY',  // Interstellar
+  'tt15092608': 'shW9i6k8Mc0', // Spider-Man Spider-Verse
+  'tt6710474': 'wxN1T1UxQ2A',  // Everything Everywhere
+  'tt0903747': 'HhesaQXLuRY',  // Breaking Bad
+  'tt14243818': 'uLtkt8BonwM', // Last of Us
+  'tt27987458': 'yAN5usp7yBY', // Shogun
+  'tt11280740': 'xKTGPpDuZ1I', // Severance
+  'tt14452778': 'i5U-w1yRy4M', // The Bear
+  'tt27078282': 'It2eP692y74', // Frieren
+  'tt8333036': 'dQw4w9WgXcQ',  // Demon Slayer
+  'tt2560140': 'MGRm4IzK1SQ',  // Attack on Titan
+  'tt12343534': 'hF2fL9f8wQc', // Jujutsu Kaisen
+  'tt0877057': 'NlJZ-YgAt-c'   // Death Note
+};
+
+// Rich Offline fallback dictionary for curated list metadata
+export const CURATED_OFFLINE_DB: Record<string, any> = {
+  'tt10366206': {
+    Title: 'Inside Out 2',
+    Year: '2024',
+    Released: '14 Jun 2024',
+    Runtime: '96 min',
+    Genre: 'Animation, Adventure, Comedy',
+    Director: 'Kelsey Mann',
+    Actors: 'Amy Poehler, Maya Hawke, Kensington Tallman, Liza Lapira',
+    Plot: 'Teenager Riley\'s mind headquarters is undergoing a sudden demolition to make room for something entirely unexpected: new Emotions! Joy, Sadness, Anger, Fear and Disgust, who’ve long been running a successful operation by all accounts, aren’t sure how to feel when Anxiety shows up.',
+    Poster: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '7.7',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '7.7/10' }, { Source: 'Rotten Tomatoes', Value: '90%' }, { Source: 'Metacritic', Value: '73/100' }],
+    Type: 'movie'
+  },
+  'tt6263850': {
+    Title: 'Deadpool & Wolverine',
+    Year: '2024',
+    Released: '26 Jul 2024',
+    Runtime: '127 min',
+    Genre: 'Action, Comedy, Sci-Fi',
+    Director: 'Shawn Levy',
+    Actors: 'Ryan Reynolds, Hugh Jackman, Emma Corrin, Morena Baccarin',
+    Plot: 'Deadpool\'s peaceful life comes to an abrupt end when the Time Variance Authority recruits him to safeguard the multiverse alongside a grumpy Wolverine.',
+    Poster: 'https://images.unsplash.com/photo-1608889175123-8ec330b86f84?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '7.9',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '7.9/10' }, { Source: 'Rotten Tomatoes', Value: '78%' }, { Source: 'Metacritic', Value: '56/100' }],
+    Type: 'movie'
+  },
+  'tt11389872': {
+    Title: 'Kingdom of the Planet of the Apes',
+    Year: '2024',
+    Released: '10 May 2024',
+    Runtime: '145 min',
+    Genre: 'Action, Adventure, Sci-Fi',
+    Director: 'Wes Ball',
+    Actors: 'Owen Teague, Freya Allan, Kevin Durand, Peter Macon',
+    Plot: 'Many years after the reign of Caesar, a young ape goes on a journey that will lead him to question everything he has been taught about the past and make choices that will define a future for apes and humans alike.',
+    Poster: 'https://images.unsplash.com/photo-1540959733332-eab4deceeaf7?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '7.0',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '7.0/10' }, { Source: 'Rotten Tomatoes', Value: '80%' }, { Source: 'Metacritic', Value: '66/100' }],
+    Type: 'movie'
+  },
+  'tt12037194': {
+    Title: 'Furiosa: A Mad Max Saga',
+    Year: '2024',
+    Released: '24 May 2024',
+    Runtime: '148 min',
+    Genre: 'Action, Adventure, Sci-Fi',
+    Director: 'George Miller',
+    Actors: 'Anya Taylor-Joy, Chris Hemsworth, Tom Burke, Alyla Browne',
+    Plot: 'The origin story of renegade warrior Furiosa before her encounter and teamup with Mad Max in Fury Road.',
+    Poster: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '7.6',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '7.6/10' }, { Source: 'Rotten Tomatoes', Value: '90%' }, { Source: 'Metacritic', Value: '79/100' }],
+    Type: 'movie'
+  },
+  'tt16428756': {
+    Title: 'Challengers',
+    Year: '2024',
+    Released: '26 Apr 2024',
+    Runtime: '131 min',
+    Genre: 'Drama, Romance, Sports',
+    Director: 'Luca Guadagnino',
+    Actors: 'Zendaya, Mike Faist, Josh O\'Connor, Darnell Appling',
+    Plot: 'Tashi, a former tennis prodigy turned coach, signs her husband up for a challenger match, where he must face off against his former best friend and Tashi\'s ex-boyfriend.',
+    Poster: 'https://images.unsplash.com/photo-1587280501635-68a0e82cd5ff?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '7.3',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '7.3/10' }, { Source: 'Rotten Tomatoes', Value: '88%' }, { Source: 'Metacritic', Value: '82/100' }],
+    Type: 'movie'
+  },
+  'tt17279496': {
+    Title: 'Civil War',
+    Year: '2024',
+    Released: '12 Apr 2024',
+    Runtime: '109 min',
+    Genre: 'Action, Adventure, Thriller',
+    Director: 'Alex Garland',
+    Actors: 'Kirsten Dunst, Wagner Moura, Cailee Spaeny, Stephen McKinley Henderson',
+    Plot: 'A journey across a dystopian future America, following a team of military-embedded journalists as they race against time to reach DC before rebel factions descend upon the White House.',
+    Poster: 'https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '7.1',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '7.1/10' }, { Source: 'Rotten Tomatoes', Value: '81%' }, { Source: 'Metacritic', Value: '75/100' }],
+    Type: 'movie'
+  },
+  'tt15239678': {
+    Title: 'Dune: Part Two',
+    Year: '2024',
+    Released: '01 Mar 2024',
+    Runtime: '166 min',
+    Genre: 'Action, Adventure, Drama',
+    Director: 'Denis Villeneuve',
+    Actors: 'Timothée Chalamet, Zendaya, Rebecca Ferguson, Javier Bardem',
+    Plot: 'Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.',
+    Poster: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '8.6',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '8.6/10' }, { Source: 'Rotten Tomatoes', Value: '95%' }, { Source: 'Metacritic', Value: '79/100' }],
+    Type: 'movie'
+  },
+  'tt15398776': {
+    Title: 'Oppenheimer',
+    Year: '2023',
+    Released: '21 Jul 2023',
+    Runtime: '180 min',
+    Genre: 'Biography, Drama, History',
+    Director: 'Christopher Nolan',
+    Actors: 'Cillian Murphy, Emily Blunt, Matt Damon, Robert Downey Jr.',
+    Plot: 'The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb.',
+    Poster: 'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '8.4',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '8.4/10' }, { Source: 'Rotten Tomatoes', Value: '93%' }, { Source: 'Metacritic', Value: '90/100' }],
+    Type: 'movie'
+  },
+  'tt0814155': {
+    Title: 'Interstellar',
+    Year: '2014',
+    Released: '07 Nov 2014',
+    Runtime: '169 min',
+    Genre: 'Adventure, Drama, Sci-Fi',
+    Director: 'Christopher Nolan',
+    Actors: 'Matthew McConaughey, Anne Hathaway, Jessica Chastain, Mackenzie Foy',
+    Plot: 'When Earth becomes uninhabitable, a team of explorers travels through a wormhole in space in an attempt to ensure humanity\'s survival.',
+    Poster: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '8.7',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '8.7/10' }, { Source: 'Rotten Tomatoes', Value: '73%' }, { Source: 'Metacritic', Value: '74/100' }],
+    Type: 'movie'
+  },
+  'tt15092608': {
+    Title: 'Spider-Man: Across the Spider-Verse',
+    Year: '2023',
+    Released: '02 Jun 2023',
+    Runtime: '140 min',
+    Genre: 'Animation, Action, Adventure',
+    Director: 'Joaquim Dos Santos, Kemp Powers',
+    Actors: 'Shameik Moore, Hailee Steinfeld, Oscar Isaac, Jake Johnson',
+    Plot: 'Miles Morales catapults across the Multiverse, where he encounters a team of Spider-People charged with protecting its very existence.',
+    Poster: 'https://images.unsplash.com/photo-1635805737707-575885ab0820?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '8.6',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '8.6/10' }, { Source: 'Rotten Tomatoes', Value: '95%' }, { Source: 'Metacritic', Value: '86/100' }],
+    Type: 'movie'
+  },
+  'tt6710474': {
+    Title: 'Everything Everywhere All at Once',
+    Year: '2022',
+    Released: '08 Apr 2022',
+    Runtime: '139 min',
+    Genre: 'Action, Adventure, Comedy',
+    Director: 'Daniel Kwan, Daniel Scheinert',
+    Actors: 'Michelle Yeoh, Stephanie Hsu, Ke Huy Quan, Jamie Lee Curtis',
+    Plot: 'A middle-aged Chinese immigrant is swept up into an insane adventure in which she alone can save existence by exploring other universes and connecting with the lives she could have led.',
+    Poster: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '7.8',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '7.8/10' }, { Source: 'Rotten Tomatoes', Value: '93%' }, { Source: 'Metacritic', Value: '81/100' }],
+    Type: 'movie'
+  },
+  'tt0903747': {
+    Title: 'Breaking Bad',
+    Year: '2008–2013',
+    Released: '20 Jan 2008',
+    Runtime: '49 min',
+    Genre: 'Crime, Drama, Thriller',
+    Director: 'Vince Gilligan',
+    Actors: 'Bryan Cranston, Aaron Paul, Anna Gunn, Betsy Brandt',
+    Plot: 'A chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine with a former student in order to secure his family\'s future.',
+    Poster: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '9.5',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '9.5/10' }, { Source: 'Rotten Tomatoes', Value: '96%' }, { Source: 'Metacritic', Value: '87/100' }],
+    Type: 'series'
+  },
+  'tt14243818': {
+    Title: 'The Last of Us',
+    Year: '2023–',
+    Released: '15 Jan 2023',
+    Runtime: '50 min',
+    Genre: 'Action, Adventure, Drama',
+    Director: 'Craig Mazin, Neil Druckmann',
+    Actors: 'Pedro Pascal, Bella Ramsey, Gabriel Luna, Rutina Wesley',
+    Plot: 'After a global pandemic destroys civilization, a hardened survivor takes charge of a 14-year-old girl who may be humanity\'s last hope.',
+    Poster: 'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '8.8',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '8.8/10' }, { Source: 'Rotten Tomatoes', Value: '96%' }, { Source: 'Metacritic', Value: '84/100' }],
+    Type: 'series'
+  },
+  'tt27987458': {
+    Title: 'Shōgun',
+    Year: '2024',
+    Released: '27 Feb 2024',
+    Runtime: '60 min',
+    Genre: 'Adventure, Drama, History',
+    Director: 'Rachel Kondo, Justin Marks',
+    Actors: 'Hiroyuki Sanada, Cosmo Jarvis, Anna Sawai, Tadanobu Asano',
+    Plot: 'When a mysterious English ship is found marooned in a nearby fishing village, Lord Yoshii Toranaga discovers secrets that could tip the scales of power in feudal Japan.',
+    Poster: 'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '8.7',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '8.7/10' }, { Source: 'Rotten Tomatoes', Value: '99%' }, { Source: 'Metacritic', Value: '85/100' }],
+    Type: 'series'
+  },
+  'tt11280740': {
+    Title: 'Severance',
+    Year: '2022–',
+    Released: '18 Feb 2022',
+    Runtime: '57 min',
+    Genre: 'Drama, Mystery, Sci-Fi',
+    Director: 'Dan Erickson',
+    Actors: 'Adam Scott, Zach Cherry, Britt Lower, Patricia Arquette',
+    Plot: 'Mark leads a team of office workers whose memories have been surgically divided between their work and personal lives.',
+    Poster: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '8.7',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '8.7/10' }, { Source: 'Rotten Tomatoes', Value: '97%' }, { Source: 'Metacritic', Value: '83/100' }],
+    Type: 'series'
+  },
+  'tt14452778': {
+    Title: 'The Bear',
+    Year: '2022–',
+    Released: '23 Jun 2022',
+    Runtime: '30 min',
+    Genre: 'Comedy, Drama',
+    Director: 'Christopher Storer',
+    Actors: 'Jeremy Allen White, Ebon Moss-Bachrach, Ayo Edebiri, Lionel Boyce',
+    Plot: 'A young chef from the fine dining world returns to Chicago to run his family\'s sandwich shop after a family tragedy.',
+    Poster: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '8.6',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '8.6/10' }, { Source: 'Rotten Tomatoes', Value: '99%' }, { Source: 'Metacritic', Value: '86/100' }],
+    Type: 'series'
+  },
+  'tt27078282': {
+    Title: 'Frieren: Beyond Journey\'s End',
+    Year: '2023–2024',
+    Released: '29 Sep 2023',
+    Runtime: '24 min',
+    Genre: 'Animation, Adventure, Drama, Fantasy',
+    Director: 'Keiichirō Saitō',
+    Actors: 'Atsumi Tanezaki, Kana Ichinose, Chiaki Kobayashi, Hiroki Touchi',
+    Plot: 'An elf mage and her former party members have defeated the Demon King, bringing peace to the land. As an elf, Frieren will live for hundreds of years. She embarks on a new journey to understand the humans she adventured with.',
+    Poster: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '8.9',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '8.9/10' }, { Source: 'Rotten Tomatoes', Value: '100%' }, { Source: 'Metacritic', Value: '85/100' }],
+    Type: 'series'
+  },
+  'tt8333036': {
+    Title: 'Demon Slayer: Kimetsu no Yaiba',
+    Year: '2019–',
+    Released: '06 Apr 2019',
+    Runtime: '24 min',
+    Genre: 'Animation, Action, Adventure, Fantasy',
+    Director: 'Haruo Sotozaki',
+    Actors: 'Natsuki Hanae, Zach Aguilar, Abby Trott, Yoshitsugu Matsuoka',
+    Plot: 'A family is attacked by demons and only two members survive - Tanjiro and his sister Nezuko, who is turning into a demon slowly. Tanjiro sets out to become a demon slayer to avenge his family and cure his sister.',
+    Poster: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '8.6',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '8.6/10' }, { Source: 'Rotten Tomatoes', Value: '95%' }, { Source: 'Metacritic', Value: '80/100' }],
+    Type: 'series'
+  },
+  'tt2560140': {
+    Title: 'Attack on Titan',
+    Year: '2013–2023',
+    Released: '07 Apr 2013',
+    Runtime: '24 min',
+    Genre: 'Animation, Action, Adventure, Fantasy',
+    Director: 'Tetsurō Araki',
+    Actors: 'Yuki Kaji, Marina Inoue, Yui Ishikawa, Josh Grelle',
+    Plot: 'After his hometown is destroyed and his mother is killed, young Eren Jaeger vows to cleanse the earth of the giant humanoid Titans that have brought humanity to the brink of extinction.',
+    Poster: 'https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '9.1',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '9.1/10' }, { Source: 'Rotten Tomatoes', Value: '95%' }, { Source: 'Metacritic', Value: '86/100' }],
+    Type: 'series'
+  },
+  'tt12343534': {
+    Title: 'Jujutsu Kaisen',
+    Year: '2020–',
+    Released: '03 Oct 2020',
+    Runtime: '24 min',
+    Genre: 'Animation, Action, Adventure, Fantasy',
+    Director: 'Sunghoo Park',
+    Actors: 'Junya Enoki, Yuma Uchida, Asami Seto, Yuichi Nakamura',
+    Plot: 'A boy swallows a cursed talisman - the finger of a demon - and becomes cursed himself. He enters a shaman\'s school to be able to locate the demon\'s other body parts and exorcise himself.',
+    Poster: 'https://images.unsplash.com/photo-1627556587428-ec2b7abcf266?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '8.6',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '8.6/10' }, { Source: 'Rotten Tomatoes', Value: '88%' }, { Source: 'Metacritic', Value: '75/100' }],
+    Type: 'series'
+  },
+  'tt0877057': {
+    Title: 'Death Note',
+    Year: '2006–2007',
+    Released: '04 Oct 2006',
+    Runtime: '24 min',
+    Genre: 'Animation, Crime, Drama, Fantasy',
+    Director: 'Tetsurō Araki',
+    Actors: 'Mamoru Miyano, Brad Swaile, Vincent Tong, Ryô Naitô',
+    Plot: 'An intelligent high school student goes on a secret crusade to eliminate criminals from the world after discovering a notebook capable of killing anyone whose name is written into it.',
+    Poster: 'https://images.unsplash.com/photo-1580477667995-2b94f01c9516?w=500&auto=format&fit=crop&q=80',
+    imdbRating: '8.9',
+    Ratings: [{ Source: 'Internet Movie Database', Value: '8.9/10' }, { Source: 'Rotten Tomatoes', Value: '96%' }, { Source: 'Metacritic', Value: '80/100' }],
+    Type: 'series'
+  }
+};
 
 // Helper to determine if we should fall back to mock data
 function isMockMode() {
-  const key = process.env.TMDB_API_KEY;
-  return !key || key === 'your-tmdb-read-access-token-or-key' || key.trim() === '';
+  const key = process.env.OMDB_API_KEY;
+  return !key || key === 'your-omdb-api-key' || key.trim() === '';
 }
 
-// Get standard headers or query parameters for TMDB requests
-function getFetchConfig() {
-  const key = process.env.TMDB_API_KEY || '';
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json;charset=utf-8',
-  };
-
-  if (key.startsWith('eyJ')) {
-    headers['Authorization'] = `Bearer ${key}`;
-    return { headers };
-  } else {
-    return {
-      headers,
-      keyParam: `api_key=${key}`,
-    };
-  }
-}
-
-async function tmdbFetch(endpoint: string) {
-  if (isMockMode()) {
-    throw new Error('Mock mode is active.');
-  }
-
-  const config = getFetchConfig();
-  const separator = endpoint.includes('?') ? '&' : '?';
-  const url = config.keyParam 
-    ? `${TMDB_API_URL}${endpoint}${separator}${config.keyParam}`
-    : `${TMDB_API_URL}${endpoint}`;
-
+// Low-level helper to fetch from OMDb API
+async function omdbFetch(queryParams: string) {
+  const key = process.env.OMDB_API_KEY || '';
+  const url = `${OMDB_API_URL}?apikey=${key}&${queryParams}`;
   const res = await fetch(url, {
-    headers: config.headers,
     next: { revalidate: 3600 }, // Cache for 1 hour
   });
-
   if (!res.ok) {
-    throw new Error(`TMDB Fetch Error: ${res.statusText}`);
+    throw new Error(`OMDb Fetch Error: ${res.statusText}`);
   }
   return res.json();
 }
 
-export async function getTrendingMovies() {
-  if (isMockMode()) return MOCK_TRENDING_MOVIES;
-  try {
-    const data = await tmdbFetch('/trending/movie/day');
-    return data.results.slice(0, 10).map((m: any) => ({ ...m, media_type: 'movie' }));
-  } catch (e) {
-    console.error('getTrendingMovies failed, falling back to mock:', e);
-    return MOCK_TRENDING_MOVIES;
+// Low-level fetch by IMDb ID with mock fallback
+export async function getOmdbDetailsByImdbId(imdbId: string) {
+  if (isMockMode()) {
+    return CURATED_OFFLINE_DB[imdbId] || CURATED_OFFLINE_DB['tt15239678'];
   }
+  try {
+    const data = await omdbFetch(`i=${imdbId}&plot=full`);
+    if (data.Response === 'False') {
+      return CURATED_OFFLINE_DB[imdbId] || CURATED_OFFLINE_DB['tt15239678'];
+    }
+    return data;
+  } catch (e) {
+    console.error(`OMDb API details failed for ${imdbId}:`, e);
+    return CURATED_OFFLINE_DB[imdbId] || CURATED_OFFLINE_DB['tt15239678'];
+  }
+}
+
+// Helper to load a list of curated items in parallel
+async function getCuratedList(imdbIds: string[], type: 'movie' | 'tv') {
+  const promises = imdbIds.map(id => getOmdbDetailsByImdbId(id));
+  const results = await Promise.all(promises);
+  return results.map(item => {
+    const ratingFloat = item.imdbRating && item.imdbRating !== 'N/A' ? parseFloat(item.imdbRating) : 0;
+    return {
+      id: imdbIdToId(item.imdbID || 'tt15239678'),
+      title: item.Title || 'Untitled',
+      name: item.Title || 'Untitled',
+      poster_path: item.Poster && item.Poster !== 'N/A' ? item.Poster : null,
+      media_type: type,
+      vote_average: ratingFloat,
+      release_date: item.Released || item.Year || '',
+      overview: item.Plot || '',
+    };
+  });
+}
+
+export async function getTrendingMovies() {
+  return getCuratedList(TRENDING_MOVIES_IDS, 'movie');
 }
 
 export async function getTrendingTV() {
-  if (isMockMode()) return MOCK_TRENDING_TV;
-  try {
-    const data = await tmdbFetch('/trending/tv/day');
-    return data.results.slice(0, 10).map((m: any) => ({ ...m, media_type: 'tv' }));
-  } catch (e) {
-    console.error('getTrendingTV failed, falling back to mock:', e);
-    return MOCK_TRENDING_TV;
-  }
+  return getCuratedList(TRENDING_TV_IDS, 'tv');
 }
 
 export async function getTrendingAnime() {
-  if (isMockMode()) return MOCK_TRENDING_ANIME;
-  try {
-    // Discover TV shows, Animation genre (16), original language Japanese (ja), sorted by popularity
-    const data = await tmdbFetch('/discover/tv?with_original_language=ja&with_genres=16&sort_by=popularity.desc');
-    return data.results.slice(0, 10).map((m: any) => ({ ...m, media_type: 'tv' }));
-  } catch (e) {
-    console.error('getTrendingAnime failed, falling back to mock:', e);
-    return MOCK_TRENDING_ANIME;
-  }
+  return getCuratedList(TRENDING_ANIME_IDS, 'tv');
 }
 
-export async function getMediaDetails(id: number, type: 'movie' | 'tv') {
-  if (isMockMode()) {
-    // Create detailed mock response
-    const mockList = type === 'movie' ? MOCK_TRENDING_MOVIES : [...MOCK_TRENDING_TV, ...MOCK_TRENDING_ANIME];
-    const found = mockList.find((m) => m.id === id) || mockList[0];
-    
-    const mockRatings = {
-      imdb: found.vote_average ? (found.vote_average + 0.3).toFixed(1) : '7.8',
-      rottenTomatoes: found.vote_average ? Math.round(found.vote_average * 10 + 5) + '%' : '85%',
-      metacritic: found.vote_average ? Math.round(found.vote_average * 10).toString() : '78',
-    };
-
-    return {
-      ...found,
-      omdbRatings: mockRatings,
-      genres: [
-        { id: 1, name: type === 'movie' ? 'Sci-Fi' : 'Drama' },
-        { id: 2, name: 'Adventure' },
-      ],
-      credits: {
-        cast: [
-          { id: 1, name: 'Timothée Chalamet', character: 'Paul Atreides', profile_path: null },
-          { id: 2, name: 'Zendaya', character: 'Chani', profile_path: null },
-          { id: 3, name: 'Florence Pugh', character: 'Princess Irulan', profile_path: null },
-        ],
-        crew: [
-          { id: 10, name: 'Denis Villeneuve', job: 'Director' }
-        ]
-      },
-      videos: {
-        results: [
-          { id: 'v1', key: 'dQw4w9WgXcQ', site: 'YouTube', type: 'Trailer' }
-        ]
-      },
-      'watch/providers': {
-        results: {
-          US: {
-            flatrate: [
-              { provider_name: 'Netflix', logo_path: '/t2ee20G7nCttpx6Gyvxn2m04ue4.jpg' },
-              { provider_name: 'Prime Video', logo_path: '/gG0gJDhrd14OFwV0K1KgflSR2FU.jpg' }
-            ]
-          },
-          IN: {
-            flatrate: [
-              { provider_name: 'Netflix', logo_path: '/t2ee20G7nCttpx6Gyvxn2m04ue4.jpg' },
-              { provider_name: 'JioCinema', logo_path: '/gG0gJDhrd14OFwV0K1KgflSR2FU.jpg' }
-            ]
-          }
-        }
-      }
-    };
-  }
-
-  try {
-    const tmdbData = await tmdbFetch(`/${type}/${id}?append_to_response=credits,videos,watch/providers,external_ids`);
-    const imdbId = tmdbData.external_ids?.imdb_id;
-    let omdbRatings: CriticRatings = {};
-    if (imdbId) {
-      omdbRatings = await getOmdbRatings(imdbId);
-    }
-    return {
-      ...tmdbData,
-      omdbRatings,
-    };
-  } catch (e) {
-    console.error(`getMediaDetails failed for ${type} ${id}:`, e);
-    // Return base mock structure
-    return {
-      id,
-      title: type === 'movie' ? 'Mock Movie' : 'Mock TV Show',
-      name: type === 'movie' ? 'Mock Movie' : 'Mock TV Show',
-      overview: 'Details could not be fetched from TMDB. This is fallback overview.',
-      genres: [{ id: 1, name: 'Unknown' }],
-      credits: { cast: [], crew: [] },
-      videos: { results: [] },
-      'watch/providers': { results: {} },
-      omdbRatings: { imdb: '7.5', rottenTomatoes: '78%', metacritic: '72' }
-    };
-  }
-}
-
-export async function searchMedia(query: string) {
-  if (isMockMode() || !query) {
-    const allMocks = [...MOCK_TRENDING_MOVIES, ...MOCK_TRENDING_TV, ...MOCK_TRENDING_ANIME];
-    return allMocks.filter(m => {
-      const name = ((m as any).title || (m as any).name || '').toLowerCase();
-      return name.includes(query.toLowerCase());
-    });
-  }
-
-  try {
-    const data = await tmdbFetch(`/search/multi?query=${encodeURIComponent(query)}`);
-    return data.results.filter((r: any) => r.media_type === 'movie' || r.media_type === 'tv');
-  } catch (e) {
-    console.error(`searchMedia failed for ${query}:`, e);
-    return [];
-  }
-}
-
-// Mood Mapping to TMDB keywords/genres
-// Feel-Good: Comedy, Drama (Keywords: warm, feel-good, inspiring)
-// Gritty: Crime, Thriller (Keywords: dark, gritty, crime)
-// Tearjerker: Drama, Romance (Keywords: sad, tragic, emotional)
-// Mind-Bending: Sci-Fi, Mystery, Thriller (Keywords: puzzle, mind-bending, surreal)
-export const MOODS = [
-  { id: 'feel-good', name: 'Feel-Good', genres: [35, 18], keywords: 'inspiring,warm,heartwarming' },
-  { id: 'gritty', name: 'Gritty', genres: [80, 53], keywords: 'dark,gritty,crime' },
-  { id: 'tearjerker', name: 'Tearjerker', genres: [18, 10749], keywords: 'sad,tragic,tearjerker' },
-  { id: 'mind-bending', name: 'Mind-Bending', genres: [878, 9648, 53], keywords: 'mind-bending,surreal,puzzle' },
-];
-
-export async function getDiscoverMedia(type: 'movie' | 'tv', genreId?: string, moodId?: string) {
-  if (isMockMode()) {
-    let list = type === 'movie' ? MOCK_TRENDING_MOVIES : [...MOCK_TRENDING_TV, ...MOCK_TRENDING_ANIME];
-    if (moodId) {
-      // Return a filtered list based on mood mock mapping
-      if (moodId === 'mind-bending') {
-        return list.filter(m => ((m as any).title || (m as any).name || '').match(/Dune|Severance|Last of Us/i));
-      }
-      if (moodId === 'gritty') {
-        return list.filter(m => ((m as any).title || (m as any).name || '').match(/Breaking Bad|Godzilla/i));
-      }
-      if (moodId === 'feel-good') {
-        return list.filter(m => ((m as any).title || (m as any).name || '').match(/Kung Fu Panda|Frieren/i));
-      }
-      if (moodId === 'tearjerker') {
-        return list.filter(m => ((m as any).title || (m as any).name || '').match(/Attack on Titan|Last of Us/i));
-      }
-    }
-    return list;
-  }
-
-  try {
-    let queryParams = `?sort_by=popularity.desc`;
-    if (genreId) {
-      queryParams += `&with_genres=${genreId}`;
-    }
-    if (moodId) {
-      const mood = MOODS.find(m => m.id === moodId);
-      if (mood) {
-        // We filter by genres corresponding to the mood
-        queryParams += `&with_genres=${mood.genres.join(',')}`;
-      }
-    }
-    const data = await tmdbFetch(`/discover/${type}${queryParams}`);
-    return data.results.map((m: any) => ({ ...m, media_type: type }));
-  } catch (e) {
-    console.error(`discoverMedia failed:`, e);
-    return type === 'movie' ? MOCK_TRENDING_MOVIES : MOCK_TRENDING_TV;
-  }
+export async function getNewReleases() {
+  return getCuratedList(NEW_RELEASES_IDS, 'movie');
 }
 
 export interface CriticRatings {
@@ -425,52 +449,167 @@ export interface CriticRatings {
 }
 
 export async function getOmdbRatings(imdbId: string): Promise<CriticRatings> {
+  const details = await getOmdbDetailsByImdbId(imdbId);
+  const ratings = details.Ratings || [];
+  const rt = ratings.find((r: any) => r.Source === 'Rotten Tomatoes')?.Value;
+  const meta = details.Metascore && details.Metascore !== 'N/A' ? details.Metascore : undefined;
+
+  return {
+    imdb: details.imdbRating && details.imdbRating !== 'N/A' ? details.imdbRating : undefined,
+    rottenTomatoes: rt,
+    metacritic: meta || details.Metascore,
+  };
+}
+
+export async function getMediaDetails(id: number, type: 'movie' | 'tv') {
+  const imdbId = idToImdbId(id);
+  const item = await getOmdbDetailsByImdbId(imdbId);
+
+  // Parse genres
+  const genreList = (item.Genre || '')
+    .split(',')
+    .map((g: string, i: number) => ({ id: i + 1, name: g.trim() }))
+    .filter((g: any) => g.name.length > 0);
+
+  // Parse actors into cast
+  const castList = (item.Actors || '')
+    .split(',')
+    .map((actor: string, i: number) => ({
+      id: i + 1,
+      name: actor.trim(),
+      character: 'Key Cast',
+      profile_path: null
+    }))
+    .filter((a: any) => a.name.length > 0);
+
+  // Parse director into crew
+  const crewList = (item.Director || '')
+    .split(',')
+    .map((director: string, i: number) => ({
+      id: i + 10,
+      name: director.trim(),
+      job: 'Director'
+    }))
+    .filter((c: any) => c.name.length > 0);
+
+  const ratings = item.Ratings || [];
+  const rt = ratings.find((r: any) => r.Source === 'Rotten Tomatoes')?.Value;
+
+  const omdbRatings: CriticRatings = {
+    imdb: item.imdbRating && item.imdbRating !== 'N/A' ? item.imdbRating : undefined,
+    rottenTomatoes: rt,
+    metacritic: item.Metascore && item.Metascore !== 'N/A' ? item.Metascore : undefined,
+  };
+
+  // Find trailer YouTube key
+  const trailerKey = TRAILER_MAP[imdbId] || 'dQw4w9WgXcQ';
+
+  // Map to details structure
+  return {
+    id,
+    title: item.Title || 'Untitled',
+    name: item.Title || 'Untitled',
+    tagline: item.Writer ? `Written by ${item.Writer}` : undefined,
+    overview: item.Plot || '',
+    release_date: item.Released || item.Year || '',
+    first_air_date: item.Released || item.Year || '',
+    genres: genreList,
+    runtime: item.Runtime && item.Runtime !== 'N/A' ? parseInt(item.Runtime.match(/\d+/)?.[0] || '0') : 0,
+    number_of_seasons: item.totalSeasons && item.totalSeasons !== 'N/A' ? parseInt(item.totalSeasons) : undefined,
+    vote_average: item.imdbRating && item.imdbRating !== 'N/A' ? parseFloat(item.imdbRating) : 0,
+    poster_path: item.Poster && item.Poster !== 'N/A' ? item.Poster : null,
+    backdrop_path: null, // OMDb doesn't return backdrops; we'll fallback to placeholder / poster
+    credits: {
+      cast: castList,
+      crew: crewList
+    },
+    videos: {
+      results: [
+        { id: 'v1', key: trailerKey, site: 'YouTube', type: 'Trailer' }
+      ]
+    },
+    'watch/providers': {
+      results: {
+        US: {
+          flatrate: [
+            { provider_id: 8, provider_name: 'Netflix', logo_path: '/t2ee20G7nCttpx6Gyvxn2m04ue4.jpg' },
+            { provider_id: 9, provider_name: 'Prime Video', logo_path: '/gG0gJDhrd14OFwV0K1KgflSR2FU.jpg' }
+          ]
+        },
+        IN: {
+          flatrate: [
+            { provider_id: 8, provider_name: 'Netflix', logo_path: '/t2ee20G7nCttpx6Gyvxn2m04ue4.jpg' },
+            { provider_id: 220, provider_name: 'JioCinema', logo_path: '/gG0gJDhrd14OFwV0K1KgflSR2FU.jpg' }
+          ]
+        }
+      }
+    },
+    omdbRatings
+  };
+}
+
+export async function searchMedia(query: string) {
+  if (!query) return [];
   const key = process.env.OMDB_API_KEY;
   if (!key || key === 'your-omdb-api-key' || key.trim() === '') {
-    // Generate realistic consistent mock rating based on imdbId hash
-    const hash = imdbId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    const imdbVal = (7.2 + (hash % 18) / 10).toFixed(1);
-    const rtVal = Math.round(72 + (hash % 23)) + '%';
-    const metaVal = Math.round(68 + (hash % 25)).toString();
-    return {
-      imdb: imdbVal,
-      rottenTomatoes: rtVal,
-      metacritic: metaVal,
-    };
+    // Filter mocks
+    const allMocks = Object.values(CURATED_OFFLINE_DB);
+    return allMocks
+      .filter(item => (item.Title || '').toLowerCase().includes(query.toLowerCase()))
+      .map(item => ({
+        id: imdbIdToId(item.imdbID || 'tt15239678'),
+        title: item.Title,
+        poster_path: item.Poster,
+        media_type: item.Type === 'series' ? 'tv' : 'movie',
+        vote_average: parseFloat(item.imdbRating) || 0,
+        release_date: item.Released,
+      }));
   }
 
   try {
-    const res = await fetch(`https://www.omdbapi.com/?apikey=${key}&i=${imdbId}`, {
-      next: { revalidate: 86400 }, // Cache for 24 hours
-    });
-    if (!res.ok) throw new Error('OMDb API error');
-    const data = await res.json();
-    
-    if (data.Response === 'False') return {};
+    const data = await omdbFetch(`s=${encodeURIComponent(query)}`);
+    if (data.Response === 'False' || !data.Search) return [];
 
-    const ratings = data.Ratings || [];
-    const rt = ratings.find((r: any) => r.Source === 'Rotten Tomatoes')?.Value;
-    const meta = data.Metascore && data.Metascore !== 'N/A' ? data.Metascore : undefined;
+    // Fetch full details in parallel for ratings
+    const detailPromises = data.Search.slice(0, 10).map((item: any) => getOmdbDetailsByImdbId(item.imdbID));
+    const details = await Promise.all(detailPromises);
 
-    return {
-      imdb: data.imdbRating && data.imdbRating !== 'N/A' ? data.imdbRating : undefined,
-      rottenTomatoes: rt,
-      metacritic: meta,
-    };
+    return details.map((item: any) => ({
+      id: imdbIdToId(item.imdbID || 'tt15239678'),
+      title: item.Title,
+      poster_path: item.Poster !== 'N/A' ? item.Poster : null,
+      media_type: item.Type === 'series' ? 'tv' : 'movie',
+      vote_average: item.imdbRating && item.imdbRating !== 'N/A' ? parseFloat(item.imdbRating) : 0,
+      release_date: item.Released || item.Year || '',
+    }));
   } catch (e) {
-    console.error('getOmdbRatings failed:', e);
-    return {};
+    console.error(`searchMedia failed for ${query}:`, e);
+    return [];
   }
 }
 
-export async function getNewReleases() {
-  if (isMockMode()) return MOCK_NEW_RELEASES;
-  try {
-    const data = await tmdbFetch('/movie/now_playing');
-    return data.results.slice(0, 10).map((m: any) => ({ ...m, media_type: 'movie' }));
-  } catch (e) {
-    console.error('getNewReleases failed, falling back to mock:', e);
-    return MOCK_NEW_RELEASES;
-  }
+export async function getDiscoverMedia(type: 'movie' | 'tv', genreId?: string, moodId?: string) {
+  // Discover logic using OMDb: fallback to filter local mock database or return curated selections
+  const list = Object.values(CURATED_OFFLINE_DB);
+  const filtered = list.filter(item => {
+    const isCorrectType = type === 'movie' ? item.Type === 'movie' : item.Type === 'series';
+    return isCorrectType;
+  });
+
+  return filtered.map(item => ({
+    id: imdbIdToId(item.imdbID || 'tt15239678'),
+    title: item.Title,
+    poster_path: item.Poster !== 'N/A' ? item.Poster : null,
+    media_type: type,
+    vote_average: item.imdbRating && item.imdbRating !== 'N/A' ? parseFloat(item.imdbRating) : 0,
+    release_date: item.Released || item.Year || '',
+  }));
 }
 
+// Mood Mapping to keywords
+export const MOODS = [
+  { id: 'feel-good', name: 'Feel-Good', genres: [35, 18], keywords: 'inspiring,warm,heartwarming' },
+  { id: 'gritty', name: 'Gritty', genres: [80, 53], keywords: 'dark,gritty,crime' },
+  { id: 'tearjerker', name: 'Tearjerker', genres: [18, 10749], keywords: 'sad,tragic,tearjerker' },
+  { id: 'mind-bending', name: 'Mind-Bending', genres: [878, 9648, 53], keywords: 'mind-bending,surreal,puzzle' },
+];
