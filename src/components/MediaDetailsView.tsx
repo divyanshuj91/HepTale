@@ -3,7 +3,7 @@ import { getCurrentUser } from '@/app/auth-actions'
 import { getMovieReviews, getMovieRatingStats } from '@/app/actions/db-actions'
 import ReviewSection from './ReviewSection'
 import MediaActions from './MediaActions'
-import { Calendar, Clock, Film, Star, Tv, Video } from 'lucide-react'
+import { Calendar, Clock, Film, Star, Tv, Video, Heart } from 'lucide-react'
 
 interface MediaDetailsViewProps {
   mediaId: number
@@ -67,32 +67,31 @@ export default async function MediaDetailsView({
     : null
 
   return (
-    <div className="pb-16 flex flex-col">
+    <div className="pb-16 flex flex-col bg-background text-foreground transition-colors duration-200">
       {/* 1. Backdrop Hero Section */}
-      <div className="relative min-h-[40vh] md:min-h-[50vh] flex items-end overflow-hidden pt-24 pb-8">
+      <div className="relative min-h-[45vh] md:min-h-[55vh] flex items-end overflow-hidden pt-24 pb-8 border-b border-primary">
         {backdropUrl ? (
           <div className="absolute inset-0 -z-10">
             <img
               src={backdropUrl}
               alt={title}
-              className="h-full w-full object-cover object-center opacity-30"
+              className="h-full w-full object-cover object-center opacity-25"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/70 to-zinc-950/20" />
-            <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/50 to-transparent" />
+            <div className="absolute inset-0 marquee-gradient" />
           </div>
         ) : (
-          <div className="absolute inset-0 -z-10 bg-gradient-to-br from-zinc-900 to-zinc-950" />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-br from-background via-primary/5 to-background" />
         )}
 
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-container-max">
           <div className="flex flex-col gap-6 md:flex-row md:items-end">
             {/* Poster Card */}
             {posterUrl ? (
-              <div className="w-[150px] md:w-[220px] flex-shrink-0 rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900 shadow-2xl">
-                <img src={posterUrl} alt={title} className="h-full w-full object-cover" />
+              <div className="w-[150px] md:w-[220px] flex-shrink-0 border border-primary p-1 bg-background shadow-[4px_4px_0px_0px_var(--shadow-color)]">
+                <img src={posterUrl} alt={title} className="w-full aspect-[2/3] object-cover" />
               </div>
             ) : (
-              <div className="w-[150px] md:w-[220px] aspect-[2/3] flex-shrink-0 rounded-2xl border border-zinc-800 bg-zinc-900/60 flex items-center justify-center p-4 text-center text-sm font-semibold text-zinc-500">
+              <div className="w-[150px] md:w-[220px] aspect-[2/3] flex-shrink-0 border border-primary bg-muted/20 flex items-center justify-center p-4 text-center text-sm font-serif italic text-muted-foreground shadow-[4px_4px_0px_0px_var(--shadow-color)]">
                 No Poster Available
               </div>
             )}
@@ -101,30 +100,30 @@ export default async function MediaDetailsView({
             <div className="space-y-4">
               <div className="space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded bg-emerald-500/10 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-emerald-400 border border-emerald-500/20">
-                    {mediaType === 'movie' ? 'Movie' : 'TV Series'}
+                  <span className="border border-primary bg-primary text-primary-foreground px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest shadow-[2px_2px_0px_0px_var(--shadow-color)]">
+                    {mediaType === 'movie' ? 'Film' : 'TV Broadcast'}
                   </span>
                   {voteAverage > 0 && (
-                    <span className="flex items-center gap-1 rounded bg-zinc-900/80 px-2 py-0.5 text-xs font-semibold text-amber-400 border border-zinc-800">
-                      <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                    <span className="flex items-center gap-1 border border-primary bg-background px-2 py-0.5 text-[10px] font-bold text-primary shadow-[2px_2px_0px_0px_var(--shadow-color)]">
+                      <Star className="h-3 w-3 fill-primary text-primary" />
                       {voteAverage.toFixed(1)} TMDB
                     </span>
                   )}
                 </div>
 
-                <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl text-zinc-100">
+                <h1 className="text-3xl font-serif italic font-bold tracking-tight sm:text-4xl md:text-5xl text-white drop-shadow-md">
                   {title} {year ? `(${year})` : ''}
                 </h1>
                 
                 {tagline && (
-                  <p className="text-sm italic text-zinc-400 md:text-base">
+                  <p className="text-sm font-serif italic text-muted-foreground/90 md:text-base drop-shadow-sm">
                     &ldquo;{tagline}&rdquo;
                   </p>
                 )}
               </div>
 
               {/* Specs & Metadata */}
-              <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-semibold text-zinc-400">
+              <div className="flex flex-wrap gap-x-6 gap-y-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                 {releaseDate && (
                   <span className="flex items-center gap-1">
                     <Calendar className="h-3.5 w-3.5" />
@@ -146,11 +145,11 @@ export default async function MediaDetailsView({
               </div>
 
               {/* Genre Chips */}
-              <div className="flex flex-wrap gap-1.5 pt-1">
+              <div className="flex flex-wrap gap-2 pt-1">
                 {genres.map((g: any) => (
                   <span
                     key={g.id}
-                    className="rounded-full border border-zinc-800 bg-zinc-900/60 px-3 py-1 text-xs font-medium text-zinc-300"
+                    className="border border-primary bg-card/60 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary shadow-[1px_1px_0px_0px_var(--shadow-color)]"
                   >
                     {g.name}
                   </span>
@@ -174,7 +173,7 @@ export default async function MediaDetailsView({
       </div>
 
       {/* 2. Main Page Layout */}
-      <div className="container mx-auto px-4 mt-10">
+      <div className="container mx-auto px-4 mt-12 max-w-container-max">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
           
           {/* Left Column: Synopsis, Trailer, Cast, Where to Watch */}
@@ -182,19 +181,19 @@ export default async function MediaDetailsView({
             
             {/* Synopsis */}
             <div className="space-y-3">
-              <h2 className="text-xl font-bold text-zinc-100 flex items-center gap-2">
-                <Film className="h-5 w-5 text-emerald-400" />
+              <h2 className="text-xl font-serif italic font-bold text-primary flex items-center gap-2 border-b border-primary pb-2">
+                <Film className="h-4.5 w-4.5 text-primary" />
                 Synopsis
               </h2>
-              <p className="text-sm text-zinc-300 leading-relaxed whitespace-pre-line">
+              <p className="text-sm font-serif text-foreground leading-relaxed whitespace-pre-line">
                 {overview || 'No overview available for this title.'}
               </p>
             </div>
 
             {/* Where to Watch Streaming Availability */}
-            <div className="space-y-3 border-t border-zinc-900 pt-6">
-              <h2 className="text-xl font-bold text-zinc-100 flex items-center gap-2">
-                <Video className="h-5 w-5 text-emerald-400" />
+            <div className="space-y-3 border-t border-primary pt-6">
+              <h2 className="text-xl font-serif italic font-bold text-primary flex items-center gap-2 border-b border-primary pb-2">
+                <Video className="h-4.5 w-4.5 text-primary" />
                 Where to Watch
               </h2>
               
@@ -203,21 +202,21 @@ export default async function MediaDetailsView({
                   {streamProviders.map((provider: any) => (
                     <div
                       key={provider.provider_id}
-                      className="flex items-center gap-2 rounded-xl bg-zinc-900/40 p-2 pr-4 border border-zinc-800 hover:border-zinc-700 transition-colors"
+                      className="flex items-center gap-2 border border-primary bg-card p-2 pr-4 shadow-[2px_2px_0px_0px_var(--shadow-color)] hover:border-ring transition-colors"
                       title={provider.provider_name}
                     >
                       <img
                         src={`https://image.tmdb.org/t/p/original${provider.logo_path}`}
                         alt={provider.provider_name}
-                        className="h-8 w-8 rounded-lg"
+                        className="h-8 w-8"
                       />
-                      <span className="text-xs font-bold text-zinc-300">{provider.provider_name}</span>
+                      <span className="text-xs font-bold uppercase tracking-wider text-foreground">{provider.provider_name}</span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="rounded-xl border border-zinc-900 bg-zinc-950 p-4 text-center">
-                  <p className="text-xs text-zinc-500 font-medium">
+                <div className="border border-primary bg-muted/10 p-4 text-center">
+                  <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">
                     No streaming platforms detected in your region. Check JustWatch website for rent/buy options.
                   </p>
                 </div>
@@ -226,30 +225,30 @@ export default async function MediaDetailsView({
 
             {/* Cast & Crew Slider */}
             {castList.length > 0 && (
-              <div className="space-y-3 border-t border-zinc-900 pt-6">
-                <h2 className="text-xl font-bold text-zinc-100 flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-emerald-400" />
+              <div className="space-y-3 border-t border-primary pt-6">
+                <h2 className="text-xl font-serif italic font-bold text-primary flex items-center gap-2 border-b border-primary pb-2">
+                  <Heart className="h-4.5 w-4.5 text-primary" />
                   Key Cast
                 </h2>
                 
-                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
+                <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
                   {castList.map((actor: any) => {
                     const pic = actor.profile_path
                       ? `https://image.tmdb.org/t/p/w185${actor.profile_path}`
                       : null
                     return (
                       <div key={actor.id} className="w-[110px] flex-shrink-0 flex flex-col items-center text-center">
-                        <div className="h-20 w-20 rounded-full bg-zinc-900 overflow-hidden border border-zinc-800 mb-2">
+                        <div className="h-20 w-20 bg-background border border-primary overflow-hidden mb-2 shadow-[2px_2px_0px_0px_var(--shadow-color)] transition-transform duration-200 hover:scale-105">
                           {pic ? (
                             <img src={pic} alt={actor.name} className="h-full w-full object-cover" />
                           ) : (
-                            <div className="h-full w-full flex items-center justify-center text-xs font-semibold text-zinc-600">
+                            <div className="h-full w-full flex items-center justify-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                               No Pic
                             </div>
                           )}
                         </div>
-                        <p className="text-xs font-bold text-zinc-200 line-clamp-1">{actor.name}</p>
-                        <p className="text-[10px] text-zinc-500 line-clamp-1">{actor.character}</p>
+                        <p className="text-xs font-bold text-foreground line-clamp-1">{actor.name}</p>
+                        <p className="text-[10px] text-muted-foreground italic line-clamp-1">{actor.character}</p>
                       </div>
                     )
                   })}
@@ -259,18 +258,18 @@ export default async function MediaDetailsView({
 
             {/* Embedded Trailer Section */}
             {trailerKey && (
-              <div className="space-y-3 border-t border-zinc-900 pt-6">
-                <h2 className="text-xl font-bold text-zinc-100 flex items-center gap-2">
-                  <Video className="h-5 w-5 text-emerald-400" />
+              <div className="space-y-3 border-t border-primary pt-6">
+                <h2 className="text-xl font-serif italic font-bold text-primary flex items-center gap-2 border-b border-primary pb-2">
+                  <Video className="h-4.5 w-4.5 text-primary" />
                   Watch Trailer
                 </h2>
-                <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-zinc-900 bg-zinc-950 shadow-lg">
+                <div className="relative aspect-video w-full overflow-hidden border border-primary bg-background shadow-[4px_4px_0px_0px_var(--shadow-color)]">
                   <iframe
                     src={`https://www.youtube.com/embed/${trailerKey}`}
                     title={`${title} Official Trailer`}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
-                    className="absolute inset-0 h-full w-full"
+                    className="absolute inset-0 h-full w-full border-none"
                   />
                 </div>
               </div>
@@ -279,7 +278,7 @@ export default async function MediaDetailsView({
           </div>
 
           {/* Right Column: Moctale Meter stats, rating selector, and community reviews */}
-          <div className="lg:col-span-1 space-y-8 border-t border-zinc-900 pt-8 lg:border-t-0 lg:pt-0 lg:border-l lg:border-zinc-900 lg:pl-8">
+          <div className="lg:col-span-1 space-y-8 border-t border-primary pt-8 lg:border-t-0 lg:pt-0 lg:border-l lg:border-primary lg:pl-8">
             <ReviewSection
               currentUser={currentUser}
               mediaId={mediaId}

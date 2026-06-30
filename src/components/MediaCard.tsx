@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { Star } from 'lucide-react'
 
 interface MediaCardProps {
@@ -33,9 +32,9 @@ export default function MediaCard({
   const href = `/${media_type}/${id}`
 
   return (
-    <Link href={href} className="group relative flex flex-col overflow-hidden rounded-xl glass-panel card-glow-emerald transition-all duration-300 hover:-translate-y-1">
+    <Link href={href} className="group relative flex flex-col border border-primary bg-card text-foreground shadow-[4px_4px_0px_0px_var(--shadow-color)] hover:shadow-[6px_6px_0px_0px_var(--shadow-color)] transition-all duration-200 active:translate-y-0.5 active:shadow-[2px_2px_0px_0px_var(--shadow-color)]">
       {/* Aspect Ratio container for Poster */}
-      <div className="relative aspect-[2/3] w-full overflow-hidden bg-zinc-950">
+      <div className="relative aspect-[2/3] w-full overflow-hidden bg-background border-b border-primary">
         {posterUrl ? (
           <img
             src={posterUrl}
@@ -44,35 +43,35 @@ export default function MediaCard({
             loading="lazy"
           />
         ) : (
-          <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-950 p-4 text-center">
-            <span className="text-sm font-semibold text-zinc-400">{displayTitle}</span>
-            <span className="mt-2 text-xs uppercase tracking-widest text-zinc-600">{media_type}</span>
+          <div className="flex h-full w-full flex-col items-center justify-center bg-muted/20 p-4 text-center">
+            <span className="text-xs font-serif italic text-muted-foreground">{displayTitle}</span>
+            <span className="mt-2 text-[9px] font-bold uppercase tracking-widest text-primary border border-primary px-1.5 py-0.5 bg-background">{media_type}</span>
           </div>
         )}
 
         {/* Floating Badges */}
-        <div className="absolute top-2 right-2 flex flex-col gap-1.5">
+        <div className="absolute top-2 right-2 flex flex-col gap-1.5 items-end">
           {vote_average !== undefined && vote_average > 0 && (
-            <div className="flex items-center gap-1 rounded-md bg-zinc-950/80 px-2 py-1 text-xs font-semibold text-amber-400 backdrop-blur-sm shadow-[0_0_10px_oklch(0.8_0.15_80/15%)]">
-              <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+            <div className="flex items-center gap-1 border border-primary bg-background px-2 py-0.5 text-[10px] font-bold text-primary shadow-[2px_2px_0px_0px_var(--shadow-color)]">
+              <Star className="h-3 w-3 fill-primary text-primary" />
               {vote_average.toFixed(1)}
             </div>
           )}
-          <div className="rounded-md bg-zinc-950/80 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400 backdrop-blur-sm self-end shadow-[0_0_10px_oklch(0.85_0.16_150/15%)]">
-            {media_type === 'movie' ? 'Movie' : 'Show'}
+          <div className="border border-primary bg-primary text-primary-foreground px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest shadow-[2px_2px_0px_0px_var(--shadow-color)]">
+            {media_type === 'movie' ? 'Film' : 'Series'}
           </div>
         </div>
 
         {/* Hover overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div className="absolute inset-0 bg-gradient-to-t from-primary/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </div>
 
       {/* Media Details */}
-      <div className="p-3">
-        <h3 className="line-clamp-1 text-sm font-bold text-zinc-100 transition-colors group-hover:text-emerald-400">
+      <div className="p-3.5 flex flex-col gap-1">
+        <h3 className="line-clamp-1 font-serif italic text-base font-bold text-primary group-hover:underline transition-colors">
           {displayTitle}
         </h3>
-        <p className="mt-1 text-xs text-zinc-500">
+        <p className="font-sans text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
           {year ? year : 'Release Unknown'}
         </p>
       </div>
