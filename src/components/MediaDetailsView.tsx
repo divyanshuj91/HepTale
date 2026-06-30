@@ -34,6 +34,7 @@ export default async function MediaDetailsView({
   const runtime = tmdbData.runtime // Movie runtime in minutes
   const seasons = tmdbData.number_of_seasons // TV seasons count
   const voteAverage = tmdbData.vote_average
+  const omdbRatings = tmdbData.omdbRatings || {}
 
   // Find trailer YouTube key
   const videosList = tmdbData.videos?.results || []
@@ -104,9 +105,24 @@ export default async function MediaDetailsView({
                     {mediaType === 'movie' ? 'Film' : 'TV Broadcast'}
                   </span>
                   {voteAverage > 0 && (
-                    <span className="flex items-center gap-1 border border-primary bg-background px-2 py-0.5 text-[10px] font-bold text-primary shadow-[2px_2px_0px_0px_var(--shadow-color)]">
+                    <span className="flex items-center gap-1 border border-primary bg-background px-2 py-0.5 text-[10px] font-bold text-primary shadow-[2px_2px_0px_0px_var(--shadow-color)]" title="TMDB Vote Average">
                       <Star className="h-3 w-3 fill-primary text-primary" />
                       {voteAverage.toFixed(1)} TMDB
+                    </span>
+                  )}
+                  {omdbRatings.imdb && (
+                    <span className="flex items-center border border-primary bg-[#f5c518] text-zinc-950 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider shadow-[2px_2px_0px_0px_var(--shadow-color)]" title="IMDb Rating">
+                      IMDb {omdbRatings.imdb}
+                    </span>
+                  )}
+                  {omdbRatings.rottenTomatoes && (
+                    <span className="flex items-center border border-primary bg-[#e53935] text-white px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider shadow-[2px_2px_0px_0px_var(--shadow-color)]" title="Rotten Tomatoes Score">
+                      🍅 {omdbRatings.rottenTomatoes}
+                    </span>
+                  )}
+                  {omdbRatings.metacritic && (
+                    <span className="flex items-center border border-primary bg-[#00fc87] text-zinc-950 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider shadow-[2px_2px_0px_0px_var(--shadow-color)]" title="Metacritic Score">
+                      MC {omdbRatings.metacritic}
                     </span>
                   )}
                 </div>

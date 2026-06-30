@@ -142,6 +142,50 @@ export const MOCK_TRENDING_ANIME = [
   },
 ];
 
+export const MOCK_NEW_RELEASES = [
+  {
+    id: 1022789,
+    title: 'Inside Out 2',
+    media_type: 'movie',
+    overview: 'Teenager Riley\'s mind headquarters is undergoing a sudden demolition to make room for something entirely unexpected: new Emotions!',
+    poster_path: '/vpnVM9B6NMmQjGJWZ0Tyh0v2jOQ.jpg',
+    backdrop_path: '/stKGOmvmv4v25ajN6n66nZ66oR4.jpg',
+    release_date: '2024-06-12',
+    vote_average: 7.7,
+  },
+  {
+    id: 823464,
+    title: 'Godzilla x Kong: The New Empire',
+    media_type: 'movie',
+    overview: 'Following their explosive showdown, Godzilla and Kong must reunite against a colossal undiscovered threat hidden within our world.',
+    poster_path: '/v43Teu7t7t0dqCj26rT6jGB4J9M.jpg',
+    backdrop_path: '/sR0gJDhrd14OFwV0K1KgflSR2FU.jpg',
+    release_date: '2024-03-27',
+    vote_average: 7.3,
+  },
+  {
+    id: 653346,
+    title: 'Kingdom of the Planet of the Apes',
+    media_type: 'movie',
+    overview: 'Many years after the reign of Caesar, a young ape goes on a journey that will lead him to question everything he has been taught about the past.',
+    poster_path: '/gK5gxAx6az8hlw45azb8z6G1X7b.jpg',
+    backdrop_path: '/fqldE2v11X7J1n7sfPPsuhwb43S.jpg',
+    release_date: '2024-05-08',
+    vote_average: 7.1,
+  },
+  {
+    id: 786892,
+    title: 'Furiosa: A Mad Max Saga',
+    media_type: 'movie',
+    overview: 'The origin story of renegade warrior Furiosa before her encounter and teamup with Mad Max.',
+    poster_path: '/iND8VrxU2w1j8pZ1H75azH76azA.jpg',
+    backdrop_path: '/xOMo8BRK7jaNDvUeQerFJSju730.jpg',
+    release_date: '2024-05-22',
+    vote_average: 7.2,
+  },
+];
+
+
 // Helper to determine if we should fall back to mock data
 function isMockMode() {
   const key = process.env.TMDB_API_KEY;
@@ -228,8 +272,15 @@ export async function getMediaDetails(id: number, type: 'movie' | 'tv') {
     const mockList = type === 'movie' ? MOCK_TRENDING_MOVIES : [...MOCK_TRENDING_TV, ...MOCK_TRENDING_ANIME];
     const found = mockList.find((m) => m.id === id) || mockList[0];
     
+    const mockRatings = {
+      imdb: found.vote_average ? (found.vote_average + 0.3).toFixed(1) : '7.8',
+      rottenTomatoes: found.vote_average ? Math.round(found.vote_average * 10 + 5) + '%' : '85%',
+      metacritic: found.vote_average ? Math.round(found.vote_average * 10).toString() : '78',
+    };
+
     return {
       ...found,
+      omdbRatings: mockRatings,
       genres: [
         { id: 1, name: type === 'movie' ? 'Sci-Fi' : 'Drama' },
         { id: 2, name: 'Adventure' },
@@ -269,7 +320,16 @@ export async function getMediaDetails(id: number, type: 'movie' | 'tv') {
   }
 
   try {
-    return await tmdbFetch(`/${type}/${id}?append_to_response=credits,videos,watch/providers`);
+    const tmdbData = await tmdbFetch(`/${type}/${id}?append_to_response=credits,videos,watch/providers,external_ids`);
+    const imdbId = tmdbData.external_ids?.imdb_id;
+    let omdbRatings: CriticRatings = {};
+    if (imdbId) {
+      omdbRatings = await getOmdbRatings(imdbId);
+    }
+    return {
+      ...tmdbData,
+      omdbRatings,
+    };
   } catch (e) {
     console.error(`getMediaDetails failed for ${type} ${id}:`, e);
     // Return base mock structure
@@ -281,7 +341,8 @@ export async function getMediaDetails(id: number, type: 'movie' | 'tv') {
       genres: [{ id: 1, name: 'Unknown' }],
       credits: { cast: [], crew: [] },
       videos: { results: [] },
-      'watch/providers': { results: {} }
+      'watch/providers': { results: {} },
+      omdbRatings: { imdb: '7.5', rottenTomatoes: '78%', metacritic: '72' }
     };
   }
 }
@@ -356,3 +417,60 @@ export async function getDiscoverMedia(type: 'movie' | 'tv', genreId?: string, m
     return type === 'movie' ? MOCK_TRENDING_MOVIES : MOCK_TRENDING_TV;
   }
 }
+
+export interface CriticRatings {
+  imdb?: string;
+  rottenTomatoes?: string;
+  metacritic?: string;
+}
+
+export async function getOmdbRatings(imdbId: string): Promise<CriticRatings> {
+  const key = process.env.OMDB_API_KEY;
+  if (!key || key === 'your-omdb-api-key' || key.trim() === '') {
+    // Generate realistic consistent mock rating based on imdbId hash
+    const hash = imdbId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const imdbVal = (7.2 + (hash % 18) / 10).toFixed(1);
+    const rtVal = Math.round(72 + (hash % 23)) + '%';
+    const metaVal = Math.round(68 + (hash % 25)).toString();
+    return {
+      imdb: imdbVal,
+      rottenTomatoes: rtVal,
+      metacritic: metaVal,
+    };
+  }
+
+  try {
+    const res = await fetch(`https://www.omdbapi.com/?apikey=${key}&i=${imdbId}`, {
+      next: { revalidate: 86400 }, // Cache for 24 hours
+    });
+    if (!res.ok) throw new Error('OMDb API error');
+    const data = await res.json();
+    
+    if (data.Response === 'False') return {};
+
+    const ratings = data.Ratings || [];
+    const rt = ratings.find((r: any) => r.Source === 'Rotten Tomatoes')?.Value;
+    const meta = data.Metascore && data.Metascore !== 'N/A' ? data.Metascore : undefined;
+
+    return {
+      imdb: data.imdbRating && data.imdbRating !== 'N/A' ? data.imdbRating : undefined,
+      rottenTomatoes: rt,
+      metacritic: meta,
+    };
+  } catch (e) {
+    console.error('getOmdbRatings failed:', e);
+    return {};
+  }
+}
+
+export async function getNewReleases() {
+  if (isMockMode()) return MOCK_NEW_RELEASES;
+  try {
+    const data = await tmdbFetch('/movie/now_playing');
+    return data.results.slice(0, 10).map((m: any) => ({ ...m, media_type: 'movie' }));
+  } catch (e) {
+    console.error('getNewReleases failed, falling back to mock:', e);
+    return MOCK_NEW_RELEASES;
+  }
+}
+

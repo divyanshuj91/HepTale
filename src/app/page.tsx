@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { getTrendingMovies, getTrendingTV, getTrendingAnime } from '@/lib/tmdb'
+import { getTrendingMovies, getTrendingTV, getTrendingAnime, getNewReleases } from '@/lib/tmdb'
 import MediaCard from '@/components/MediaCard'
 import { MOODS } from '@/lib/tmdb'
 import { Play, Flame, Heart, Smile, Brain, Sparkles, ArrowRight } from 'lucide-react'
@@ -24,10 +24,11 @@ function getMoodIcon(moodId: string) {
 }
 
 export default async function HomePage() {
-  const [movies, tvShows, anime] = await Promise.all([
+  const [movies, tvShows, anime, newReleases] = await Promise.all([
     getTrendingMovies(),
     getTrendingTV(),
     getTrendingAnime(),
+    getNewReleases(),
   ])
 
   // Use the top trending movie for the Hero backdrop
@@ -111,6 +112,29 @@ export default async function HomePage() {
                 <span className="text-base font-serif italic font-bold text-primary">{mood.name}</span>
                 <span className="mt-1.5 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Explore vibe</span>
               </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* New Releases Row */}
+        <section className="space-y-6">
+          <div className="flex items-end justify-between border-b border-primary pb-2">
+            <div className="flex flex-col gap-0.5">
+              <h2 className="text-2xl font-serif italic font-bold text-primary">
+                New Releases
+              </h2>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Fresh from the Theaters</span>
+            </div>
+            <Link href="/discover/movie" className="flex items-center gap-1 text-xs font-bold uppercase tracking-widest border-b border-primary pb-0.5 hover:text-primary transition-all">
+              Browse All <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
+          
+          <div className="flex w-full gap-6 overflow-x-auto pb-6 custom-scrollbar">
+            {newReleases.map((movie: any) => (
+              <div key={movie.id} className="w-[180px] flex-shrink-0 sm:w-[220px]">
+                <MediaCard {...movie} media_type="movie" />
+              </div>
             ))}
           </div>
         </section>
